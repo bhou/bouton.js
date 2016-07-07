@@ -4974,9 +4974,38 @@
 	    return ThrottleNode;
 	  }(Node);
 
-	  var ret = new ThrottleNode(ms);
-	  console.log(ret);
-	  return ret;
+	  return new ThrottleNode(ms);
+	};
+
+	exports["scan"] = function (n, add) {
+	  var ScanNode = function (_Node5) {
+	    _inherits(ScanNode, _Node5);
+
+	    function ScanNode(options, eventemitter) {
+	      _classCallCheck(this, ScanNode);
+
+	      var _this6 = _possibleConstructorReturn(this, Object.getPrototypeOf(ScanNode).call(this, options, eventemitter));
+
+	      _this6.n = options.memo;
+	      _this6.add = options.add;
+	      return _this6;
+	    }
+
+	    _createClass(ScanNode, [{
+	      key: "onSignal",
+	      value: function onSignal(signal) {
+	        this.n = this.add.call(this, this.n, signal);
+	        this.send(this.n);
+	      }
+	    }]);
+
+	    return ScanNode;
+	  }(Node);
+
+	  return new ScanNode({
+	    n: n,
+	    add: add
+	  });
 	};
 
 /***/ },

@@ -25,6 +25,26 @@ exports["test Node"] = {
       .map(v => {
         test.equal(v, 101);
         test.done();
+        return v;
+      })
+      .sink();
+  },
+
+  "test scan" : (test) => {
+    const bouton = require("../lib");
+
+    let index = 0;
+    bouton.asList([1, 2, 3])
+      .scan(0, (a, b) => {
+        return a + b;
+      })
+      .act(v => {
+        console.log(v);
+        if (index < 2) index++;
+        else {
+          test.equal(v, 6);
+          test.done();
+        }
       })
       .sink();
   }

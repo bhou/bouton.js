@@ -57,7 +57,39 @@ exports["throttle"] = (ms) => {
       }
     }
   }
-  var ret = new ThrottleNode(ms);
-  console.log(ret);
-  return ret;
+  return new ThrottleNode(ms);
+};
+
+exports["scan"] = (n, add) => {
+  class ScanNode extends Node {
+    constructor(options, eventemitter) {
+      super(options, eventemitter);
+      this.n = options.n;
+      this.add = options.add;
+    }
+    onSignal(signal) {
+      this.n = this.add.call(this, this.n, signal);
+      this.send(this.n);
+    }
+  }
+
+  return new ScanNode({
+    n : n,
+    add : add
+  });
+};
+
+exports["act"] = (fn) => {
+  class ActNode extends Node {
+    constructor(options, eventemitter) {
+      super(options, eventemitter);
+      this.fn = options;
+    }
+
+    onSignal(signal) {
+      this.fn(signal);
+      this.send(signal);
+    }
+  }
+  return new ActNode(fn);
 }
