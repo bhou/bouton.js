@@ -45,3 +45,19 @@ exports["sink"] = () => {
 
   return new SinkNode();
 };
+
+exports["throttle"] = (ms) => {
+  var last = new Date().getTime();
+  class ThrottleNode extends Node {
+    onSignal(signal) {
+      var now = new Date().getTime();
+      if (now - ms >= last) {
+        last = now;
+        this.send(signal);
+      }
+    }
+  }
+  var ret = new ThrottleNode(ms);
+  console.log(ret);
+  return ret;
+}

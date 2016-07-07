@@ -77,21 +77,21 @@
 	      value: function to(downstream) {
 	        var _this2 = this;
 
-	        _get(Object.getPrototypeOf(DOMEventNode.prototype), "to", this).call(this, downstream);
-
 	        this.element.addEventListener(this.event, function () {
 	          _this2.send({
 	            event: _this2.event,
 	            sourceId: _this2.element.getAttribute("id")
 	          });
 	        });
+
+	        return _get(Object.getPrototypeOf(DOMEventNode.prototype), "to", this).call(this, downstream);
 	      }
 	    }]);
 
 	    return DOMEventNode;
 	  }(bouton.Node);
 
-	  return new DOMEventSensor({
+	  return new DOMEventNode({
 	    event: event,
 	    element: element
 	  });
@@ -4946,6 +4946,37 @@
 	  }(Node);
 
 	  return new SinkNode();
+	};
+
+	exports["throttle"] = function (ms) {
+	  var last = new Date().getTime();
+
+	  var ThrottleNode = function (_Node4) {
+	    _inherits(ThrottleNode, _Node4);
+
+	    function ThrottleNode() {
+	      _classCallCheck(this, ThrottleNode);
+
+	      return _possibleConstructorReturn(this, Object.getPrototypeOf(ThrottleNode).apply(this, arguments));
+	    }
+
+	    _createClass(ThrottleNode, [{
+	      key: "onSignal",
+	      value: function onSignal(signal) {
+	        var now = new Date().getTime();
+	        if (now - ms >= last) {
+	          last = now;
+	          this.send(signal);
+	        }
+	      }
+	    }]);
+
+	    return ThrottleNode;
+	  }(Node);
+
+	  var ret = new ThrottleNode(ms);
+	  console.log(ret);
+	  return ret;
 	};
 
 /***/ },

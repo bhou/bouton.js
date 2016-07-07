@@ -10,18 +10,18 @@ window.bouton.fromDOMEvent = (element, event) => {
     }
 
     to(downstream) {
-      super.to(downstream);
-
       this.element.addEventListener(this.event, () => {
         this.send({
           event: this.event,
           sourceId: this.element.getAttribute("id")
         });
       });
+
+      return super.to(downstream);
     }
   }
 
-  return new DOMEventSensor({
+  return new DOMEventNode({
     event : event,
     element : element
   });

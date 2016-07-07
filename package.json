@@ -9,6 +9,7 @@
     "test": "node_modules/nodeunit/bin/nodeunit test",
     "build": "node_modules/babel-cli/bin/babel.js ./src --out-dir ./lib",
     "webpack": "node_modules/webpack/bin/webpack.js",
+    "webpack-watch": "node_modules/webpack/bin/webpack.js -w",
     "webpack-prod": "node_modules/webpack/bin/webpack.js -p --entry ./lib/web-entry.js --output-filename bouton.min.js"
   },
   "repository": {
