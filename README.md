@@ -6,6 +6,8 @@ A reactive programming library based on a simple data  structure.
 
 See the tutorial: [Implement a JavaScript reactive programming library](http://blog.bohou.fr/2016/07/03/a-reactive-programming-library-implementation-part-1/)
 
+I haven't provided many operators in this library yet (It is on the plan). The idea of this library is to let you customize the library on your own way. You can build your own reactive programming library with your own set of operators. 
+
 ## Example
 
 In browser
