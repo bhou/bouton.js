@@ -1,4 +1,4 @@
-window.bouton = require("./index.js");
+window.bouton = require("./index.js").addDefault();
 
 window.bouton.fromDOMEvent = (element, event) => {
   class DOMEventNode extends bouton.Node {

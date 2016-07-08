@@ -1,6 +1,6 @@
 exports["test Node"] = {
   "test push signal" : (test) => {
-    const bouton = require("../lib");
+    const bouton = require("../lib").addDefault();
 
     class TestNode extends bouton.Node {
       onSignal(signal) {
@@ -19,7 +19,7 @@ exports["test Node"] = {
   },
 
   "test pipeline" : (test) => {
-    const bouton = require("../lib");
+    const bouton = require("../lib").addDefault();
     bouton.asList([100])
       .map(v => v + 1)
       .map(v => {
@@ -31,7 +31,7 @@ exports["test Node"] = {
   },
 
   "test scan" : (test) => {
-    const bouton = require("../lib");
+    const bouton = require("../lib").addDefault();
 
     let index = 0;
     bouton.asList([1, 2, 3])

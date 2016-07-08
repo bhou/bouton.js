@@ -7,7 +7,7 @@ class Node {
   options: any;
   ee: EventEmitter;
   signalObservers : [(signal : any) => void];
-  commandObservers : [(signal : any) => void];
+  commandObservers : [(cmd : any) => void];
   constructor(options : any, eventemitter : ?EventEmitter) {
     this.id = uuid.v1();
     this.options = options;

@@ -30,7 +30,7 @@ bouton.fromDOMEvent("click", document.getElementById("btn"))
 
 In node.js
 ```JavaScript
-const bouton = require("bouton");
+const bouton = require("bouton").defaultOperators();
 bouton.asList([1, 2, 3]) // asList is a passive source
   .map(v => {
     console.log(v);
@@ -127,4 +127,24 @@ bouton.asList(["a", "b", "c"])
 // 11
 // 12
 // 13
+```
+
+#### - bouton.addOperators(operators)
+
+add multiple operators, accept a map of name:operator pair as argument
+
+#### - bouton.addSource(name, source)
+
+register a source function.
+
+#### - bouton.addSources(sources)
+
+register multiple sources. accept a map of name:source pair as argument
+
+#### - bouton.addDefault()
+
+register the default operators and sources.
+
+```
+const bouton = require("bouton").addDefault();
 ```
