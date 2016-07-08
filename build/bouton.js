@@ -56,7 +56,7 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	window.bouton = __webpack_require__(1);
+	window.bouton = __webpack_require__(1).addDefault();
 
 	window.bouton.fromDOMEvent = function (element, event) {
 	  var DOMEventNode = function (_bouton$Node) {
@@ -104,30 +104,79 @@
 	"use strict";
 
 	var Node = __webpack_require__(2);
-	var operators = __webpack_require__(29);
-	var sources = __webpack_require__(30);
 
-	exports.Node = Node;
-	exports.Bouton = Node; // alias of node
+	var m = {};
 
-	exports.END = Node.END;
+	m.Node = Node; // Node class
+	m.Bouton = Node; // alias of node
 
-	exports.addOperator = function (name, operator) {
+	m.END = Node.END; // END signal
+
+	/**
+	 * Add an operator
+	 * @param  {string} name   - the name of the operator
+	 * @param  {function} operator - the operator function
+	 * @return {bouton}          the bouton module
+	 */
+	m.addOperator = function (name, operator) {
 	  function fn() {
 	    var node = operator.apply(undefined, arguments);
 	    return this.to(node);
 	  };
 
 	  Node.prototype[name] = fn;
+
+	  return m;
 	};
 
-	for (var name in operators) {
-	  exports.addOperator(name, operators[name]);
-	}
+	/**
+	 * Add multiple operators
+	 * @param {object} operators - name:operator pair
+	 * @return {bouton} the bouton module
+	 */
+	m.addOperators = function (ops) {
+	  for (var name in ops) {
+	    m.addOperator(name, ops[name]);
+	  }
+	};
 
-	for (var _name in sources) {
-	  exports[_name] = sources[_name];
-	}
+	/**
+	 * add a source
+	 * @param {string} name   - the source name
+	 * @param {function} source - the source function
+	 * @return {bouton}  the bouton module
+	 */
+	m.addSource = function (name, source) {
+	  m[name] = source;
+	  return m;
+	};
+
+	/**
+	 * Add multiple sources
+	 * @param {object} srcs - name:source pair
+	 * @return {bouton} the bouton module
+	 */
+	m.addSources = function (srcs) {
+	  for (var name in srcs) {
+	    m[name] = srcs[name];
+	  }
+	  return m;
+	};
+
+	/**
+	 * load default sources and operators
+	 * @return {[type]} [description]
+	 */
+	m.addDefault = function () {
+	  var operators = __webpack_require__(29); // default operators
+	  var sources = __webpack_require__(30); // default sources
+
+	  m.addSources(sources);
+	  m.addOperators(operators);
+	  return m;
+	};
+
+	module.exports = m;
 
 /***/ },
 /* 2 */
@@ -4986,7 +5035,7 @@
 
 	      var _this6 = _possibleConstructorReturn(this, Object.getPrototypeOf(ScanNode).call(this, options, eventemitter));
 
-	      _this6.n = options.memo;
+	      _this6.n = options.n;
 	      _this6.add = options.add;
 	      return _this6;
 	    }
@@ -5006,6 +5055,59 @@
 	    n: n,
 	    add: add
 	  });
+	};
+
+	exports["act"] = function (fn) {
+	  var ActNode = function (_Node6) {
+	    _inherits(ActNode, _Node6);
+
+	    function ActNode(options, eventemitter) {
+	      _classCallCheck(this, ActNode);
+
+	      var _this7 = _possibleConstructorReturn(this, Object.getPrototypeOf(ActNode).call(this, options, eventemitter));
+
+	      _this7.fn = options;
+	      return _this7;
+	    }
+
+	    _createClass(ActNode, [{
+	      key: "onSignal",
+	      value: function onSignal(signal) {
+	        this.fn(signal);
+	        this.send(signal);
+	      }
+	    }]);
+
+	    return ActNode;
+	  }(Node);
+
+	  return new ActNode(fn);
+	};
+
+	exports["done"] = function (fn) {
+	  var DoneNode = function (_Node7) {
+	    _inherits(DoneNode, _Node7);
+
+	    function DoneNode(options, eventemitter) {
+	      _classCallCheck(this, DoneNode);
+
+	      var _this8 = _possibleConstructorReturn(this, Object.getPrototypeOf(DoneNode).call(this, options, eventemitter));
+
+	      _this8.fn = options;
+	      return _this8;
+	    }
+
+	    _createClass(DoneNode, [{
+	      key: "onEnd",
+	      value: function onEnd(signal) {
+	        this.fn(signal);
+	      }
+	    }]);
+
+	    return DoneNode;
+	  }(Node);
+
+	  return new DoneNode(fn);
 	};
 
 /***/ },
@@ -5055,6 +5157,39 @@
 
 	exports["asList"] = function (array) {
 	  return new ArraySourceNode(array);
+	};
+
+	var JustOneNode = function (_Node2) {
+	  _inherits(JustOneNode, _Node2);
+
+	  function JustOneNode(options, eventemitter) {
+	    _classCallCheck(this, JustOneNode);
+
+	    var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(JustOneNode).call(this, options, eventemitter));
+
+	    _this2.value = _this2.options;
+	    _this2.visited = 0;
+	    return _this2;
+	  }
+
+	  _createClass(JustOneNode, [{
+	    key: "onRequest",
+	    value: function onRequest(cmd) {
+	      if (this.visited == 0) {
+	        this.send(this.value);
+	        this.visited++;
+	      } else if (this.visited == 1) {
+	        this.send(Node.END);
+	        this.visited++;
+	      }
+	    }
+	  }]);
+
+	  return JustOneNode;
+	}(Node);
+
+	exports["just"] = function (value) {
+	  return new JustOneNode(value);
 	};
 
 /***/ }
