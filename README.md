@@ -1,6 +1,6 @@
 # bouton.js
 
-A reactive programming library based on a simple data  structure: similar to a Doubly Linked List：
+A reactive programming library based on a simple data  structure:
 
 ![bouton.js](https://raw.githubusercontent.com/bhou/bouton.js/master/bouton.jpg)
 
