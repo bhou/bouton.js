@@ -28,6 +28,17 @@ To understand how **bouton.js** works, see the tutorial: [Implement a JavaScript
 
 I haven't provided many operators in this library yet (In progress). The idea of this library is to let you customize the library on your own way. You can build your own reactive programming library with your own set of operators.
 
+## Node / Bouton
+
+Node is the basic and only data structure in bouton.js. Both your data source and operator are inherited from it.
+
+From Node's internal point of view: it handles the received signal with **onReceive()**, and **send()** signal to downstream node. It also handles the request made by downstream with **onRequest()**, and makes a **request()** to upstream.
+
+From external point of view: You can **push()** a signal to a node, and observe the signal emitted by the node with **observeSignal()**. You can make a request with **pull()**. And observe the request made by the node by using **observeRequest()**.
+
+See document : Node
+
+
 ## Example
 
 In browser
