@@ -1,10 +1,18 @@
 # bouton.js
 
-A reactive programming library based on a simple data  structure:
+A framework to build your reactive library. It provides a basic feature set for your reactive library:
+
+- asynchronous
+- error handling
+- back pressure
+- operator extension
+- source extension
+
+The kernel of "bouton.js" is a "Node" or we can called it a "Bouton". See the following diagram:
 
 ![bouton.js](https://raw.githubusercontent.com/bhou/bouton.js/master/bouton.jpg)
 
-with bidirectional data flow:
+It has a bidirectional data flow:
 ```
 [signal flow]  : push(signal) -> Node -> send(signal) -> push(signal) -> Node
 [command flow] : Node <- pull(cmd) <- request(cmd) <- Node <- pull(cmd)
@@ -12,7 +20,11 @@ with bidirectional data flow:
 
 The signal/data flow is called "**downstream**", the command flow is called "**upstream**".
 
-See the tutorial: [Implement a JavaScript reactive programming library](http://blog.bohou.fr/2016/07/03/a-reactive-programming-library-implementation-part-1/)
+By chaining Node together you can build your stream like what RxJS, bacon.js and highland.js do.
+
+**bouton.js** ships with a small set of operators and signal generator, and provides a very simple API for you to extend you own operator and signal source.
+
+To understand how **bouton.js** works, see the tutorial: [Implement a JavaScript reactive programming library](http://blog.bohou.fr/2016/07/03/a-reactive-programming-library-implementation-part-1/)
 
 I haven't provided many operators in this library yet (In progress). The idea of this library is to let you customize the library on your own way. You can build your own reactive programming library with your own set of operators.
 
