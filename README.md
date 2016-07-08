@@ -8,7 +8,7 @@ A framework to build your reactive library. It provides a basic feature set for 
 - operator extension
 - source extension
 
-The kernel of "bouton.js" is a "Node" or we can called it a "Bouton". See the following diagram:
+The kernel of "bouton.js" is a "Node" or we can called it a "Bouton". See the following diagram: (Isn't it looks like a button? in french: "bouton")
 
 ![bouton.js](https://raw.githubusercontent.com/bhou/bouton.js/98f940870c249e872118e24b81550faa830cc312/bouton.jpg)
 
