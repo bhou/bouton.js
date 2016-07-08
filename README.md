@@ -30,7 +30,7 @@ bouton.fromDOMEvent("click", document.getElementById("btn"))
 
 In node.js
 ```JavaScript
-const bouton = require("bouton").defaultOperators();
+const bouton = require("bouton").addDefault();
 bouton.asList([1, 2, 3]) // asList is a passive source
   .map(v => {
     console.log(v);
