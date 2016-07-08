@@ -62,6 +62,10 @@ npm run webpack-prod
 ### Sources
 More sources coming soon
 
+#### - bouton.just(value)
+
+A source with only one signal in it.
+
 #### - bouton.asList(array)
 
 Turn an array to a signal source. It is a **passive** source : you need a **sink** operator to drive the stream
@@ -77,6 +81,10 @@ More operators coming soon
 
 #### - stream.act((signal) => void)
 Make side effect with the signal, send the original signal to the stream
+
+#### - stream.done(() => void)
+
+Handle END signal
 
 #### - stream.errors(error, rethrow)
 Handle errors occurred on upstream. use *rethrow* to resend signal/error to stream.
