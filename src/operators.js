@@ -93,3 +93,17 @@ exports["act"] = (fn) => {
   }
   return new ActNode(fn);
 }
+
+exports["done"] = (fn) => {
+  class DoneNode extends Node {
+    constructor(options, eventemitter) {
+      super(options, eventemitter);
+      this.fn = options;
+    }
+
+    onEnd(signal) {
+      this.fn(signal);
+    }
+  }
+  return new DoneNode(fn);
+}

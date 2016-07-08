@@ -30,7 +30,7 @@ exports["test Node"] = {
       .sink();
   },
 
-  "test scan" : (test) => {
+  "test scan operator" : (test) => {
     const bouton = require("../lib").addDefault();
 
     let index = 0;
@@ -45,6 +45,20 @@ exports["test Node"] = {
           test.equal(v, 6);
           test.done();
         }
+      })
+      .sink();
+  },
+
+  "test just source" : (test) => {
+    const bouton = require("../lib").addDefault();
+
+    let count = 0;
+    bouton.just(1)
+      .act(console.log)
+      .act(v => count++)
+      .done(() => {
+        test.equal(count, 1);
+        test.done();
       })
       .sink();
   }
