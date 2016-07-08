@@ -18,9 +18,11 @@ class ArraySourceNode extends Node {
   }
 }
 
-exports["asList"] = (array) => {
+function asList(array) {
   return new ArraySourceNode(array);
 }
+
+exports["asList"] = asList;
 
 class JustOneNode extends Node {
   constructor(options, eventemitter) {
@@ -40,6 +42,7 @@ class JustOneNode extends Node {
   }
 }
 
-exports["just"] = (value) => {
+function just (value) {
   return new JustOneNode(value);
 }
+exports["just"] = just;

@@ -1,7 +1,7 @@
 
 const Node = require("./Node");
 
-exports["map"] = (fn) => {
+function map(fn) {
   class MapNode extends Node {
     constructor(options, eventemitter) {
       super(options, eventemitter);
@@ -14,9 +14,65 @@ exports["map"] = (fn) => {
     }
   }
   return new MapNode(fn);
-};
+}
 
-exports["errors"] = (fn) => {
+exports["map"] = map;
+
+function filter(fn) {
+  class FilterNode extends Node {
+    constructor(options, eventemitter) {
+      super(options, eventemitter);
+      this.fn = options;
+    }
+
+    onSignal(signal) {
+      if (fn(signal)) {
+        this.send(signal);
+      } else {
+        // request next signal
+        this.request();
+      }
+    }
+  }
+  return new FilterNode(fn);
+}
+
+exports["filter"] = filter;
+
+function reduce(memo, iterator) {
+  class ReduceNode extends Node {
+    constructor(options, eventemitter) {
+      super(options, eventemitter);
+      this.memo = this.options.memo;
+      this.iterator = this.options.iterator;
+      this.END = false;
+    }
+
+    onSignal(signal) {
+      this.memo = this.iterator.call(this, this.memo, signal);
+      this.request(); // back pressure call for next
+    }
+
+    onEnd() {
+      this.send(this.memo);
+      this.END = true;
+    }
+
+    onRequest(cmd) {
+      if (!this.END) {
+        this.request();
+      } else {
+        this.send(Node.END);
+      }
+    }
+  }
+  return new ReduceNode({memo, iterator});
+}
+
+exports["reduce"] = reduce;
+
+
+function errors(fn) {
   class ErrorsNode extends Node {
     constructor(options, eventemitter) {
       super(options, eventemitter);
@@ -32,7 +88,9 @@ exports["errors"] = (fn) => {
   return new ErrorsNode(fn);
 };
 
-exports["sink"] = () => {
+exports["errors"] = errors;
+
+function sink() {
   class SinkNode extends Node {
     onSignal(signal) {
       this.request();
@@ -46,7 +104,9 @@ exports["sink"] = () => {
   return new SinkNode();
 };
 
-exports["throttle"] = (ms) => {
+exports["sink"] = sink;
+
+function throttle(ms) {
   var last = new Date().getTime();
   class ThrottleNode extends Node {
     onSignal(signal) {
@@ -60,7 +120,9 @@ exports["throttle"] = (ms) => {
   return new ThrottleNode(ms);
 };
 
-exports["scan"] = (n, add) => {
+exports["throttle"] = throttle;
+
+scan(n, add) {
   class ScanNode extends Node {
     constructor(options, eventemitter) {
       super(options, eventemitter);
@@ -79,7 +141,9 @@ exports["scan"] = (n, add) => {
   });
 };
 
-exports["act"] = (fn) => {
+exports["scan"] = scan;
+
+function act (fn) {
   class ActNode extends Node {
     constructor(options, eventemitter) {
       super(options, eventemitter);
@@ -94,7 +158,9 @@ exports["act"] = (fn) => {
   return new ActNode(fn);
 }
 
-exports["done"] = (fn) => {
+exports["act"] = act;
+
+function done(fn) {
   class DoneNode extends Node {
     constructor(options, eventemitter) {
       super(options, eventemitter);
@@ -107,3 +173,5 @@ exports["done"] = (fn) => {
   }
   return new DoneNode(fn);
 }
+
+exports["done"] = done;
