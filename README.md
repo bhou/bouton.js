@@ -10,7 +10,7 @@ A framework to build your reactive library. It provides a basic feature set for 
 
 The kernel of "bouton.js" is a "Node" or we can called it a "Bouton". See the following diagram:
 
-![bouton.js](https://raw.githubusercontent.com/bhou/bouton.js/master/bouton.jpg)
+![bouton.js](https://raw.githubusercontent.com/bhou/bouton.js/98f940870c249e872118e24b81550faa830cc312/bouton.jpg)
 
 It has a bidirectional data flow:
 ```
