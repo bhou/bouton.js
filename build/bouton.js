@@ -215,21 +215,20 @@
 	  }, {
 	    key: "onReceive",
 	    value: function onReceive(signal) {
-	      if (signal instanceof Error) {
+	      if (this.isErrorSignal(signal)) {
 	        this.onError(signal);
 	        this.request();
-	        //$FlowIgnore
-	      } else if (signal === Node.END) {
+	      } else if (this.isEndSignal(signal)) {
 	        try {
 	          this.onEnd(signal);
 	        } catch (error) {
-	          this.send(error);
+	          this.throwError(error, signal);
 	        }
 	      } else {
 	        try {
 	          this.onSignal(signal);
 	        } catch (error) {
-	          this.send(error);
+	          this.throwError(error, signal);
 	        }
 	      }
 	      return this;
@@ -325,6 +324,24 @@
 	    key: "from",
 	    value: function from(upstream) {
 	      return this;
+	    }
+	  }, {
+	    key: "isErrorSignal",
+	    value: function isErrorSignal(signal) {
+	      return signal instanceof Error;
+	    }
+	  }, {
+	    key: "isEndSignal",
+	    value: function isEndSignal(signal) {
+	      //$FlowIgnore
+	      return signal === Node.END;
+	    }
+	  }, {
+	    key: "throwError",
+	    value: function throwError(error, signal) {
+	      //$FlowIgnore
+	      error.signal = signal;
+	      return this.send(error);
 	    }
 	  }]);
 

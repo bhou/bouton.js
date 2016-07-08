@@ -24,23 +24,20 @@ class Node {
   }
 
   onReceive(signal : any) : Node {
-    if (signal instanceof Error) {
+    if (this.isErrorSignal(signal)) {
       this.onError(signal);
       this.request();
-      //$FlowIgnore
-    } else if (signal === Node.END) {
+    } else if (this.isEndSignal(signal)) {
       try {
         this.onEnd(signal);
       } catch (error) {
-        error.signal = signal;
-        this.send(error);
+        this.throwError(error, signal);
       }
     }else {
       try {
         this.onSignal(signal);
       } catch (error) {
-        error.signal = signal;
-        this.send(error);
+        this.throwError(error, signal);
       }
     }
     return this;
@@ -117,6 +114,21 @@ class Node {
 
   from(upstream : any) : Node {
     return this;
+  }
+
+  isErrorSignal(signal : any) : boolean {
+    return signal instanceof Error;
+  }
+
+  isEndSignal(signal : any) : boolean {
+    //$FlowIgnore
+    return signal === Node.END;
+  }
+
+  throwError(error : Error, signal : ?any) : Node {
+    //$FlowIgnore
+    error.signal = signal;
+    return this.send(error);
   }
 }
 
