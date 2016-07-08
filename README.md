@@ -1,12 +1,20 @@
 # bouton.js
 
-A reactive programming library based on a simple data  structure.
+A reactive programming library based on a simple data  structure: similar to a Doubly Linked List：
 
 ![bouton.js](https://raw.githubusercontent.com/bhou/bouton.js/master/bouton.jpg)
 
+with bidirectional data flow:
+```
+[signal flow]  : push(signal) -> Node -> send(signal) -> push(signal) -> Node
+[command flow] : Node <- pull(cmd) <- request(cmd) <- Node <- pull(cmd)
+```
+
+The signal/data flow is called "**downstream**", the command flow is called "**upstream**".
+
 See the tutorial: [Implement a JavaScript reactive programming library](http://blog.bohou.fr/2016/07/03/a-reactive-programming-library-implementation-part-1/)
 
-I haven't provided many operators in this library yet (It is on the plan). The idea of this library is to let you customize the library on your own way. You can build your own reactive programming library with your own set of operators. 
+I haven't provided many operators in this library yet (In progress). The idea of this library is to let you customize the library on your own way. You can build your own reactive programming library with your own set of operators.
 
 ## Example
 
@@ -16,7 +24,7 @@ In browser
 bouton.fromDOMEvent("click", document.getElementById("btn"))
   .throttle(500)
   .map(v => 1)
-  .scan(0, (a, b) => a + b)
+  .scan(0, (a, b) => a + b) // count the clicks
   .act(console.log);
 ```
 
