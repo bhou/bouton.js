@@ -32,12 +32,14 @@ class Node {
       try {
         this.onEnd(signal);
       } catch (error) {
+        error.signal = signal;
         this.send(error);
       }
     }else {
       try {
         this.onSignal(signal);
       } catch (error) {
+        error.signal = signal;
         this.send(error);
       }
     }
