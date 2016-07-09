@@ -24,6 +24,10 @@ class Node {
   }
 
   onReceive(signal : any) : Node {
+    this.signalObservers.forEach(fn => {
+      fn(signal, this, "onReceive");
+    });
+
     if (this.isErrorSignal(signal)) {
       this.onError(signal);
       this.request();
@@ -60,7 +64,7 @@ class Node {
 
   send(signal : any) : Node {
     this.signalObservers.forEach(fn => {
-      fn(signal, this);
+      fn(signal, this, "send");
     });
     setImmediate(()=> {
       this.ee.emit("outgoing-" + this.id, signal);
@@ -93,13 +97,16 @@ class Node {
   }
 
   onRequest(cmd : any) : Node {
+    this.commandObservers.forEach(fn => {
+      fn(cmd, this, "onRequest");
+    });
     this.request(cmd);
     return this;
   }
 
   request(cmd : any) : Node {
     this.commandObservers.forEach(fn => {
-      fn(cmd, this);
+      fn(cmd, this, "request");
     });
     setImmediate(() => {
       this.ee.emit("request-" + this.id, cmd);

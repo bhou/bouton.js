@@ -10,9 +10,11 @@ exports["test Node"] = {
 
     var node = new TestNode();
 
-    node.observeSignal((signal) => {
-      test.equal(signal, 101);
-      test.done();
+    node.observeSignal((signal, node, when) => {
+      if (when === "send") {
+        test.equal(signal, 101);
+        test.done();
+      }
     });
 
     node.push(100);
