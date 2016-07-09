@@ -60,7 +60,7 @@ class Node {
 
   send(signal : any) : Node {
     this.signalObservers.forEach(fn => {
-      fn(signal);
+      fn(signal, this);
     });
     setImmediate(()=> {
       this.ee.emit("outgoing-" + this.id, signal);
@@ -99,7 +99,7 @@ class Node {
 
   request(cmd : any) : Node {
     this.commandObservers.forEach(fn => {
-      fn(cmd);
+      fn(cmd, this);
     });
     setImmediate(() => {
       this.ee.emit("request-" + this.id, cmd);
