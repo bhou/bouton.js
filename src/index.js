@@ -13,7 +13,7 @@ m.END = Node.END; // END signal
  * @param  {function} operator - the operator function
  * @return {bouton}          the bouton module
  */
-m.addOperator = (name, operator) => {
+function addOperator(name, operator) {
   function fn(...args) {
     let node = operator(...args);
     return this.to(node);
@@ -23,17 +23,19 @@ m.addOperator = (name, operator) => {
 
   return m;
 }
+m.addOperator = addOperator;
 
 /**
  * Add multiple operators
  * @param {object} operators - name:operator pair
  * @return {bouton} the bouton module
  */
-m.addOperators = (ops) => {
+function addOperators (ops) {
   for (let name in ops) {
     m.addOperator(name, ops[name]);
   }
 }
+m.addOperators = addOperators;
 
 /**
  * add a source
@@ -41,28 +43,30 @@ m.addOperators = (ops) => {
  * @param {function} source - the source function
  * @return {bouton}  the bouton module
  */
-m.addSource = (name, source) => {
+function addSource (name, source) {
   m[name] = source;
   return m;
 }
+m.addSource = addSource;
 
 /**
  * Add multiple sources
  * @param {object} srcs - name:source pair
  * @return {bouton} the bouton module
  */
-m.addSources = (srcs) => {
+function addSources(srcs) {
   for (let name in srcs) {
     m[name] = srcs[name];
   }
   return m;
 }
+m.addSources = addSources;
 
 /**
  * load default sources and operators
  * @return {[type]} [description]
  */
-m.addDefault = () => {
+function addDefault () {
   const operators = require("./operators"); // default operators
   const sources = require("./sources"); // default sources
 
@@ -70,5 +74,29 @@ m.addDefault = () => {
   m.addOperators(operators);
   return m;
 }
+m.addDefault = addDefault;
+
+function extend(extension) {
+  if (typeof extension === "string") {
+    extension = require(extension);
+  }
+
+  if (extension.operators) {
+    m.addOperators(extension.operators);
+  }
+
+  if (extension.sources) {
+    m.addSources(extension.sources);
+  }
+
+  if (extension.types) {
+    for (let name in extension.types) {
+      m[name] = extension.types[name];
+    }
+  }
+
+  return m;
+}
+m.extend = extend;
 
 module.exports = m;
