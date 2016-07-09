@@ -24,9 +24,7 @@ class Node {
   }
 
   onReceive(signal : any) : Node {
-    this.signalObservers.forEach(fn => {
-      fn(signal, this, "onReceive");
-    });
+    this.invokeSignalObservers(signal, "onReceive");
 
     if (this.isErrorSignal(signal)) {
       this.onError(signal);
@@ -63,9 +61,7 @@ class Node {
   }
 
   send(signal : any) : Node {
-    this.signalObservers.forEach(fn => {
-      fn(signal, this, "send");
-    });
+    this.invokeSignalObservers(signal, "send");
     setImmediate(()=> {
       this.ee.emit("outgoing-" + this.id, signal);
     });
@@ -97,17 +93,13 @@ class Node {
   }
 
   onRequest(cmd : any) : Node {
-    this.commandObservers.forEach(fn => {
-      fn(cmd, this, "onRequest");
-    });
+    this.invokeCommandObservers(cmd, "onRequest");
     this.request(cmd);
     return this;
   }
 
   request(cmd : any) : Node {
-    this.commandObservers.forEach(fn => {
-      fn(cmd, this, "request");
-    });
+    this.invokeCommandObservers(cmd, "request");
     setImmediate(() => {
       this.ee.emit("request-" + this.id, cmd);
     });
@@ -136,6 +128,18 @@ class Node {
     //$FlowIgnore
     error.signal = signal;
     return this.send(error);
+  }
+
+  invokeSignalObservers(signal : any, when : string, data : any) {
+    this.signalObservers.forEach(fn => {
+      fn(signal, this, when, data);
+    });
+  }
+
+  invokeCommandObservers(cmd : any, when : string, data : any) {
+    this.commandObservers.forEach(fn => {
+      fn(cmd, this, when, data);
+    });
   }
 }
 
