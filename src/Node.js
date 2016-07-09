@@ -130,13 +130,13 @@ class Node {
     return this.send(error);
   }
 
-  invokeSignalObservers(signal : any, when : string, data : any) {
+  invokeSignalObservers(signal : any, when : string, ... data : any) {
     this.signalObservers.forEach(fn => {
       fn(signal, this, when, data);
     });
   }
 
-  invokeCommandObservers(cmd : any, when : string, data : any) {
+  invokeCommandObservers(cmd : any, when : string, ... data : any) {
     this.commandObservers.forEach(fn => {
       fn(cmd, this, when, data);
     });
