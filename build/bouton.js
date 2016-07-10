@@ -118,7 +118,7 @@
 	 * @param  {function} operator - the operator function
 	 * @return {bouton}          the bouton module
 	 */
-	m.addOperator = function (name, operator) {
+	function addOperator(name, operator) {
 	  function fn() {
 	    var node = operator.apply(undefined, arguments);
 	    return this.to(node);
@@ -127,18 +127,20 @@
 	  Node.prototype[name] = fn;
 
 	  return m;
-	};
+	}
+	m.addOperator = addOperator;
 
 	/**
 	 * Add multiple operators
 	 * @param {object} operators - name:operator pair
 	 * @return {bouton} the bouton module
 	 */
-	m.addOperators = function (ops) {
+	function addOperators(ops) {
 	  for (var name in ops) {
 	    m.addOperator(name, ops[name]);
 	  }
-	};
+	}
+	m.addOperators = addOperators;
 
 	/**
 	 * add a source
@@ -146,35 +148,61 @@
 	 * @param {function} source - the source function
 	 * @return {bouton}  the bouton module
 	 */
-	m.addSource = function (name, source) {
+	function addSource(name, source) {
 	  m[name] = source;
 	  return m;
-	};
+	}
+	m.addSource = addSource;
 
 	/**
 	 * Add multiple sources
 	 * @param {object} srcs - name:source pair
 	 * @return {bouton} the bouton module
 	 */
-	m.addSources = function (srcs) {
+	function addSources(srcs) {
 	  for (var name in srcs) {
 	    m[name] = srcs[name];
 	  }
 	  return m;
-	};
+	}
+	m.addSources = addSources;
 
 	/**
 	 * load default sources and operators
 	 * @return {[type]} [description]
 	 */
-	m.addDefault = function () {
+	function addDefault() {
 	  var operators = __webpack_require__(29); // default operators
 	  var sources = __webpack_require__(30); // default sources
 
 	  m.addSources(sources);
 	  m.addOperators(operators);
 	  return m;
-	};
+	}
+	m.addDefault = addDefault;
+
+	function extend(extension) {
+	  if (typeof extension === "string") {
+	    extension = __webpack_require__(31)(extension);
+	  }
+
+	  if (extension.operators) {
+	    m.addOperators(extension.operators);
+	  }
+
+	  if (extension.sources) {
+	    m.addSources(extension.sources);
+	  }
+
+	  if (extension.types) {
+	    for (var name in extension.types) {
+	      m[name] = extension.types[name];
+	    }
+	  }
+
+	  return m;
+	}
+	m.extend = extend;
 
 	module.exports = m;
 
@@ -215,6 +243,8 @@
 	  }, {
 	    key: "onReceive",
 	    value: function onReceive(signal) {
+	      this.invokeSignalObservers(signal, "onReceive");
+
 	      if (this.isErrorSignal(signal)) {
 	        this.onError(signal);
 	        this.request();
@@ -256,9 +286,7 @@
 	    value: function send(signal) {
 	      var _this2 = this;
 
-	      this.signalObservers.forEach(function (fn) {
-	        fn(signal);
-	      });
+	      this.invokeSignalObservers(signal, "send");
 	      setImmediate(function () {
 	        _this2.ee.emit("outgoing-" + _this2.id, signal);
 	      });
@@ -298,6 +326,7 @@
 	  }, {
 	    key: "onRequest",
 	    value: function onRequest(cmd) {
+	      this.invokeCommandObservers(cmd, "onRequest");
 	      this.request(cmd);
 	      return this;
 	    }
@@ -306,9 +335,7 @@
 	    value: function request(cmd) {
 	      var _this5 = this;
 
-	      this.commandObservers.forEach(function (fn) {
-	        fn(cmd);
-	      });
+	      this.invokeCommandObservers(cmd, "request");
 	      setImmediate(function () {
 	        _this5.ee.emit("request-" + _this5.id, cmd);
 	      });
@@ -342,6 +369,32 @@
 	      //$FlowIgnore
 	      error.signal = signal;
 	      return this.send(error);
+	    }
+	  }, {
+	    key: "invokeSignalObservers",
+	    value: function invokeSignalObservers(signal, when) {
+	      for (var _len = arguments.length, data = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+	        data[_key - 2] = arguments[_key];
+	      }
+
+	      var _this6 = this;
+
+	      this.signalObservers.forEach(function (fn) {
+	        fn(signal, _this6, when, data);
+	      });
+	    }
+	  }, {
+	    key: "invokeCommandObservers",
+	    value: function invokeCommandObservers(cmd, when) {
+	      for (var _len2 = arguments.length, data = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
+	        data[_key2 - 2] = arguments[_key2];
+	      }
+
+	      var _this7 = this;
+
+	      this.commandObservers.forEach(function (fn) {
+	        fn(cmd, _this7, when, data);
+	      });
 	    }
 	  }]);
 
@@ -4929,7 +4982,7 @@
 
 	var Node = __webpack_require__(2);
 
-	exports["map"] = function (fn) {
+	function map(fn) {
 	  var MapNode = function (_Node) {
 	    _inherits(MapNode, _Node);
 
@@ -4954,28 +5007,109 @@
 	  }(Node);
 
 	  return new MapNode(fn);
-	};
+	}
 
-	exports["errors"] = function (fn) {
-	  var ErrorsNode = function (_Node2) {
-	    _inherits(ErrorsNode, _Node2);
+	exports["map"] = map;
 
-	    function ErrorsNode(options, eventemitter) {
-	      _classCallCheck(this, ErrorsNode);
+	function filter(fn) {
+	  var FilterNode = function (_Node2) {
+	    _inherits(FilterNode, _Node2);
 
-	      var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(ErrorsNode).call(this, options, eventemitter));
+	    function FilterNode(options, eventemitter) {
+	      _classCallCheck(this, FilterNode);
+
+	      var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(FilterNode).call(this, options, eventemitter));
 
 	      _this2.fn = options;
 	      return _this2;
 	    }
 
+	    _createClass(FilterNode, [{
+	      key: "onSignal",
+	      value: function onSignal(signal) {
+	        if (fn(signal)) {
+	          this.send(signal);
+	        } else {
+	          // request next signal
+	          this.request();
+	        }
+	      }
+	    }]);
+
+	    return FilterNode;
+	  }(Node);
+
+	  return new FilterNode(fn);
+	}
+
+	exports["filter"] = filter;
+
+	function reduce(memo, iterator) {
+	  var ReduceNode = function (_Node3) {
+	    _inherits(ReduceNode, _Node3);
+
+	    function ReduceNode(options, eventemitter) {
+	      _classCallCheck(this, ReduceNode);
+
+	      var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(ReduceNode).call(this, options, eventemitter));
+
+	      _this3.memo = _this3.options.memo;
+	      _this3.iterator = _this3.options.iterator;
+	      _this3.END = false;
+	      return _this3;
+	    }
+
+	    _createClass(ReduceNode, [{
+	      key: "onSignal",
+	      value: function onSignal(signal) {
+	        this.memo = this.iterator.call(this, this.memo, signal);
+	        this.request(); // back pressure call for next
+	      }
+	    }, {
+	      key: "onEnd",
+	      value: function onEnd() {
+	        this.send(this.memo);
+	        this.END = true;
+	      }
+	    }, {
+	      key: "onRequest",
+	      value: function onRequest(cmd) {
+	        if (!this.END) {
+	          this.request();
+	        } else {
+	          this.send(Node.END);
+	        }
+	      }
+	    }]);
+
+	    return ReduceNode;
+	  }(Node);
+
+	  return new ReduceNode({ memo: memo, iterator: iterator });
+	}
+
+	exports["reduce"] = reduce;
+
+	function errors(fn) {
+	  var ErrorsNode = function (_Node4) {
+	    _inherits(ErrorsNode, _Node4);
+
+	    function ErrorsNode(options, eventemitter) {
+	      _classCallCheck(this, ErrorsNode);
+
+	      var _this4 = _possibleConstructorReturn(this, Object.getPrototypeOf(ErrorsNode).call(this, options, eventemitter));
+
+	      _this4.fn = options;
+	      return _this4;
+	    }
+
 	    _createClass(ErrorsNode, [{
 	      key: "onError",
 	      value: function onError(error) {
-	        var _this3 = this;
+	        var _this5 = this;
 
 	        this.fn(error, function (signal) {
-	          _this3.send(signal);
+	          _this5.send(signal);
 	        });
 	      }
 	    }]);
@@ -4986,9 +5120,11 @@
 	  return new ErrorsNode(fn);
 	};
 
-	exports["sink"] = function () {
-	  var SinkNode = function (_Node3) {
-	    _inherits(SinkNode, _Node3);
+	exports["errors"] = errors;
+
+	function sink() {
+	  var SinkNode = function (_Node5) {
+	    _inherits(SinkNode, _Node5);
 
 	    function SinkNode() {
 	      _classCallCheck(this, SinkNode);
@@ -5014,11 +5150,13 @@
 	  return new SinkNode();
 	};
 
-	exports["throttle"] = function (ms) {
+	exports["sink"] = sink;
+
+	function throttle(ms) {
 	  var last = new Date().getTime();
 
-	  var ThrottleNode = function (_Node4) {
-	    _inherits(ThrottleNode, _Node4);
+	  var ThrottleNode = function (_Node6) {
+	    _inherits(ThrottleNode, _Node6);
 
 	    function ThrottleNode() {
 	      _classCallCheck(this, ThrottleNode);
@@ -5043,18 +5181,20 @@
 	  return new ThrottleNode(ms);
 	};
 
+	exports["throttle"] = throttle;
+
 	exports["scan"] = function (n, add) {
-	  var ScanNode = function (_Node5) {
-	    _inherits(ScanNode, _Node5);
+	  var ScanNode = function (_Node7) {
+	    _inherits(ScanNode, _Node7);
 
 	    function ScanNode(options, eventemitter) {
 	      _classCallCheck(this, ScanNode);
 
-	      var _this6 = _possibleConstructorReturn(this, Object.getPrototypeOf(ScanNode).call(this, options, eventemitter));
+	      var _this8 = _possibleConstructorReturn(this, Object.getPrototypeOf(ScanNode).call(this, options, eventemitter));
 
-	      _this6.n = options.n;
-	      _this6.add = options.add;
-	      return _this6;
+	      _this8.n = options.n;
+	      _this8.add = options.add;
+	      return _this8;
 	    }
 
 	    _createClass(ScanNode, [{
@@ -5075,16 +5215,16 @@
 	};
 
 	exports["act"] = function (fn) {
-	  var ActNode = function (_Node6) {
-	    _inherits(ActNode, _Node6);
+	  var ActNode = function (_Node8) {
+	    _inherits(ActNode, _Node8);
 
 	    function ActNode(options, eventemitter) {
 	      _classCallCheck(this, ActNode);
 
-	      var _this7 = _possibleConstructorReturn(this, Object.getPrototypeOf(ActNode).call(this, options, eventemitter));
+	      var _this9 = _possibleConstructorReturn(this, Object.getPrototypeOf(ActNode).call(this, options, eventemitter));
 
-	      _this7.fn = options;
-	      return _this7;
+	      _this9.fn = options;
+	      return _this9;
 	    }
 
 	    _createClass(ActNode, [{
@@ -5102,16 +5242,16 @@
 	};
 
 	exports["done"] = function (fn) {
-	  var DoneNode = function (_Node7) {
-	    _inherits(DoneNode, _Node7);
+	  var DoneNode = function (_Node9) {
+	    _inherits(DoneNode, _Node9);
 
 	    function DoneNode(options, eventemitter) {
 	      _classCallCheck(this, DoneNode);
 
-	      var _this8 = _possibleConstructorReturn(this, Object.getPrototypeOf(DoneNode).call(this, options, eventemitter));
+	      var _this10 = _possibleConstructorReturn(this, Object.getPrototypeOf(DoneNode).call(this, options, eventemitter));
 
-	      _this8.fn = options;
-	      return _this8;
+	      _this10.fn = options;
+	      return _this10;
 	    }
 
 	    _createClass(DoneNode, [{
@@ -5172,9 +5312,11 @@
 	  return ArraySourceNode;
 	}(Node);
 
-	exports["asList"] = function (array) {
+	function asList(array) {
 	  return new ArraySourceNode(array);
-	};
+	}
+
+	exports["asList"] = asList;
 
 	var JustOneNode = function (_Node2) {
 	  _inherits(JustOneNode, _Node2);
@@ -5205,9 +5347,38 @@
 	  return JustOneNode;
 	}(Node);
 
-	exports["just"] = function (value) {
+	function just(value) {
 	  return new JustOneNode(value);
+	}
+	exports["just"] = just;
+
+/***/ },
+/* 31 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var map = {
+		"./Node": 2,
+		"./Node.js": 2,
+		"./index": 1,
+		"./index.js": 1,
+		"./operators": 29,
+		"./operators.js": 29,
+		"./sources": 30,
+		"./sources.js": 30
 	};
+	function webpackContext(req) {
+		return __webpack_require__(webpackContextResolve(req));
+	};
+	function webpackContextResolve(req) {
+		return map[req] || (function() { throw new Error("Cannot find module '" + req + "'.") }());
+	};
+	webpackContext.keys = function webpackContextKeys() {
+		return Object.keys(map);
+	};
+	webpackContext.resolve = webpackContextResolve;
+	module.exports = webpackContext;
+	webpackContext.id = 31;
+
 
 /***/ }
 /******/ ]);

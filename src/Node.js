@@ -6,14 +6,12 @@ class Node {
   id : string;
   options: any;
   ee: EventEmitter;
-  signalObservers : [(signal : any) => void];
-  commandObservers : [(cmd : any) => void];
+  observers : [(node : Node, when : string, ... data : any) => void];
   constructor(options : any, eventemitter : ?EventEmitter) {
     this.id = uuid.v1();
     this.options = options;
     this.ee = eventemitter ? eventemitter : new EventEmitter();
-    this.signalObservers = [];
-    this.commandObservers = [];
+    this.observers = [];
   }
 
   push(signal : any) : Node {
@@ -24,7 +22,7 @@ class Node {
   }
 
   onReceive(signal : any) : Node {
-    this.invokeSignalObservers(signal, "onReceive");
+    this.invokeObservers("onReceive", signal);
 
     if (this.isErrorSignal(signal)) {
       this.onError(signal);
@@ -61,19 +59,20 @@ class Node {
   }
 
   send(signal : any) : Node {
-    this.invokeSignalObservers(signal, "send");
+    this.invokeObservers("send", signal);
     setImmediate(()=> {
       this.ee.emit("outgoing-" + this.id, signal);
     });
     return this;
   }
 
-  observeSignal(observer : (signal : any) => void) : Node {
-    this.signalObservers.push(observer);
+  observe(observer : (node : Node, when : string, ... data : any) => void) : Node {
+    this.observers.push(observer);
     return this;
   }
 
   to(downstream : Node) : Node {
+    this.invokeObservers("to", downstream);
     this.ee.on("outgoing-" + this.id, (signal) => {
       downstream.push(signal);
     });
@@ -93,13 +92,13 @@ class Node {
   }
 
   onRequest(cmd : any) : Node {
-    this.invokeCommandObservers(cmd, "onRequest");
+    this.invokeObservers("onRequest", cmd);
     this.request(cmd);
     return this;
   }
 
   request(cmd : any) : Node {
-    this.invokeCommandObservers(cmd, "request");
+    this.invokeObservers("request", cmd);
     setImmediate(() => {
       this.ee.emit("request-" + this.id, cmd);
     });
@@ -107,11 +106,12 @@ class Node {
   }
 
   observeCommand(observer : (cmd : any) => void) : Node {
-    this.commandObservers.push(observer);
+    this.observers.push(observer);
     return this;
   }
 
   from(upstream : any) : Node {
+    this.invokeObservers("from", upstream);
     return this;
   }
 
@@ -130,15 +130,9 @@ class Node {
     return this.send(error);
   }
 
-  invokeSignalObservers(signal : any, when : string, ... data : any) {
-    this.signalObservers.forEach(fn => {
-      fn(signal, this, when, data);
-    });
-  }
-
-  invokeCommandObservers(cmd : any, when : string, ... data : any) {
-    this.commandObservers.forEach(fn => {
-      fn(cmd, this, when, data);
+  invokeObservers(when : string, ... data : any) {
+    this.observers.forEach(fn => {
+      fn(this, when, data);
     });
   }
 }

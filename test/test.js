@@ -10,7 +10,7 @@ exports["test Node"] = {
 
     var node = new TestNode();
 
-    node.observeSignal((signal, node, when) => {
+    node.observe((node, when, signal) => {
       if (when === "send") {
         test.equal(signal, 101);
         test.done();
