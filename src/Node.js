@@ -135,9 +135,19 @@ class Node {
   }
 
   invokeObservers(when : string, ... data : any) {
-    this.observers.forEach(fn => {
-      fn(this, when, data);
-    });
+    try {
+      this.observers.forEach(fn => {
+        fn(this, when, data);
+      });
+
+      // run globally registered observers
+      let globalObservers = require("./index").observers;
+      for (let name in globalObservers) {
+        globalObservers[name](this, when, data);
+      };
+    } catch (err) {
+      console.error(err.message);
+    }
   }
 }
 
