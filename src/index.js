@@ -99,8 +99,8 @@ function extend(extension) {
   }
 
   if (extension.others) {
-    for (let name in extension.types) {
-      m[name] = extension.types[name];
+    for (let name in extension.others) {
+      m[name] = extension.others[name];
     }
   }
 
