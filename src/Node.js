@@ -137,7 +137,9 @@ class Node {
   invokeObservers(when : string, ... data : any) {
     try {
       this.observers.forEach(fn => {
-        fn(this, when, data);
+        data.unshift(when).unshift(this);
+        fn.apply(this, data);
+        fn(this, when, ... data);
       });
 
       // run globally registered observers

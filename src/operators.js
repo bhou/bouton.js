@@ -122,7 +122,7 @@ function throttle(ms) {
 
 exports["throttle"] = throttle;
 
-scan(n, add) {
+function scan(n, add) {
   class ScanNode extends Node {
     constructor(options, eventemitter) {
       super(options, eventemitter);
