@@ -135,17 +135,17 @@ class Node {
   }
 
   invokeObservers(when : string, ... data : any) {
+    data.unshift(when)
+    data.unshift(this);
     try {
       this.observers.forEach(fn => {
-        data.unshift(when).unshift(this);
         fn.apply(this, data);
-        fn(this, when, ... data);
       });
 
       // run globally registered observers
       let globalObservers = require("./index").observers;
       for (let name in globalObservers) {
-        globalObservers[name](this, when, data);
+        globalObservers[name].apply(this, data);
       };
     } catch (err) {
       console.error(err.message);
