@@ -2,16 +2,22 @@
 const EventEmitter = require("eventemitter3");
 const uuid = require("node-uuid");
 
+type NodeRef = { [key: string]: Node };
+
 class Node {
   id : string;
   options: any;
   ee: EventEmitter;
   observers : [(node : Node, when : string, ... data : any) => void];
+  upstreams : NodeRef;
+  downstreams : NodeRef;
   constructor(options : any, eventemitter : ?EventEmitter) {
     this.id = uuid.v1();
     this.options = options;
     this.ee = eventemitter ? eventemitter : new EventEmitter();
     this.observers = [];
+    this.upstreams = {};
+    this.downstreams = {};
   }
 
   push(signal : any) : Node {
@@ -73,6 +79,8 @@ class Node {
 
   to(downstream : Node) : Node {
     this.invokeObservers("to", downstream);
+
+    this.downstreams[downstream.id] = downstream;
     this.ee.on("outgoing-" + this.id, (signal) => {
       downstream.push(signal);
     });
@@ -105,12 +113,8 @@ class Node {
     return this;
   }
 
-  observeCommand(observer : (cmd : any) => void) : Node {
-    this.observers.push(observer);
-    return this;
-  }
-
   from(upstream : any) : Node {
+    this.upstreams[upstream.id] = upstream;
     this.invokeObservers("from", upstream);
     return this;
   }
