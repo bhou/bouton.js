@@ -76,6 +76,9 @@ function addDefault () {
 }
 m.addDefault = addDefault;
 
+
+m.observers = {};
+
 function extend(extension) {
   if (typeof extension === "string") {
     extension = require(extension);
@@ -89,7 +92,13 @@ function extend(extension) {
     m.addSources(extension.sources);
   }
 
-  if (extension.types) {
+  if (extension.observers) {
+    for (let name in extension.observers) {
+      m.observers[name] = extension.observers[name];
+    }
+  }
+
+  if (extension.others) {
     for (let name in extension.types) {
       m[name] = extension.types[name];
     }
