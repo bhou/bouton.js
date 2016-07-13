@@ -7,6 +7,12 @@ m.Bouton = Node;  // alias of node
 
 m.END = Node.END; // END signal
 
+m.reserved = [
+  "id", "options", "ee", "observers", "upstreams", "downstreams",
+  "push", "onReceive", "onSignal", "onError", "onEnd", "send",
+  "observe", "to", "pull", "onRequest", "request", "from", "isErrorSignal",
+  "isEndSignal", "throwError", "invokeObservers"
+];
 /**
  * Add an operator
  * @param  {string} name   - the name of the operator
@@ -14,12 +20,17 @@ m.END = Node.END; // END signal
  * @return {bouton}          the bouton module
  */
 function addOperator(name, operator) {
+  if (m.reserved.indexOf(name) >= 0) {
+    console.warn(`can't add operator '${name}', name is reserved. `);
+    return m;
+  }
   function fn(...args) {
     let node = operator(...args);
     return this.to(node);
   };
 
   Node.prototype[name] = fn;
+  m[name] = operator;
 
   return m;
 }
@@ -44,6 +55,10 @@ m.addOperators = addOperators;
  * @return {bouton}  the bouton module
  */
 function addSource (name, source) {
+  if (m.reserved.indexOf(name) >= 0) {
+    console.warn(`can't add source '${name}', name is reserved. `);
+    return m;
+  }
   m[name] = source;
   return m;
 }
