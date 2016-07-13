@@ -22,7 +22,10 @@
   },
   "scripts": {
     "test": "node_modules/nodeunit/bin/nodeunit test",
-    "build": "node_modules/babel-cli/bin/babel.js ./src --out-dir ./lib",
+    "flow" : "node_modules/babel-cli/bin/babel.js ./src --out-dir ./flow-output",
+    "flow-watch" : "node_modules/babel-cli/bin/babel.js -w ./src --out-dir ./flow-output",
+    "build": "node_modules/babel-cli/bin/babel.js ./flow-output --out-dir ./lib --presets es2015",
+    "build-watch": "node_modules/babel-cli/bin/babel.js -w ./flow-output --out-dir ./lib --presets es2015",
     "webpack": "node_modules/webpack/bin/webpack.js",
     "webpack-watch": "node_modules/webpack/bin/webpack.js -w",
     "webpack-prod": "node_modules/webpack/bin/webpack.js -p --entry ./lib/web-entry.js --output-filename bouton.min.js"
