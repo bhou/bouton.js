@@ -1,6 +1,6 @@
 exports["test Node"] = {
   "test push signal" : (test) => {
-    const bouton = require("../lib").addDefault();
+    const bouton = require("../lib").default();
 
     class TestNode extends bouton.Node {
       onSignal(signal) {
@@ -21,7 +21,7 @@ exports["test Node"] = {
   },
 
   "test pipeline" : (test) => {
-    const bouton = require("../lib").addDefault();
+    const bouton = require("../lib").default();
     bouton.asList([100])
       .map(v => v + 1)
       .map(v => {
@@ -33,7 +33,7 @@ exports["test Node"] = {
   },
 
   "test scan operator" : (test) => {
-    const bouton = require("../lib").addDefault();
+    const bouton = require("../lib").default();
 
     let index = 0;
     bouton.asList([1, 2, 3])
@@ -52,7 +52,7 @@ exports["test Node"] = {
   },
 
   "test just source" : (test) => {
-    const bouton = require("../lib").addDefault();
+    const bouton = require("../lib").default();
 
     let count = 0;
     bouton.just(1)
@@ -66,7 +66,7 @@ exports["test Node"] = {
   },
 
   "test reduce operator" : (test) => {
-    const bouton = require("../lib").addDefault();
+    const bouton = require("../lib").default();
 
     let index = 0;
     bouton.asList([1, 2, 3])

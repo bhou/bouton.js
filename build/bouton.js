@@ -92,7 +92,7 @@
 	  }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
 	}
 
-	window.bouton = __webpack_require__(1).addDefault();
+	window.bouton = __webpack_require__(1).default();
 
 	window.bouton.fromDOMEvent = function (element, event) {
 	  var DOMEventNode = function (_bouton$Node) {
@@ -148,6 +148,7 @@
 
 	m.END = Node.END; // END signal
 
+	m.reserved = ["id", "options", "ee", "observers", "upstreams", "downstreams", "push", "onReceive", "onSignal", "onError", "onEnd", "send", "observe", "to", "pull", "onRequest", "request", "from", "isErrorSignal", "isEndSignal", "throwError", "invokeObservers"];
 	/**
 	 * Add an operator
 	 * @param  {string} name   - the name of the operator
@@ -155,12 +156,17 @@
 	 * @return {bouton}          the bouton module
 	 */
 	function addOperator(name, operator) {
+	  if (m.reserved.indexOf(name) >= 0) {
+	    console.warn("can't add operator '" + name + "', name is reserved. ");
+	    return m;
+	  }
 	  function fn() {
 	    var node = operator.apply(undefined, arguments);
 	    return this.to(node);
 	  };
 
 	  Node.prototype[name] = fn;
+	  m[name] = operator;
 
 	  return m;
 	}
@@ -185,6 +191,10 @@
 	 * @return {bouton}  the bouton module
 	 */
 	function addSource(name, source) {
+	  if (m.reserved.indexOf(name) >= 0) {
+	    console.warn("can't add source '" + name + "', name is reserved. ");
+	    return m;
+	  }
 	  m[name] = source;
 	  return m;
 	}
@@ -207,7 +217,7 @@
 	 * load default sources and operators
 	 * @return {[type]} [description]
 	 */
-	function addDefault() {
+	function extendDefault() {
 	  var operators = __webpack_require__(29); // default operators
 	  var sources = __webpack_require__(30); // default sources
 
@@ -215,7 +225,7 @@
 	  m.addOperators(operators);
 	  return m;
 	}
-	m.addDefault = addDefault;
+	m.default = extendDefault;
 
 	m.observers = {};
 
