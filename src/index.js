@@ -81,7 +81,7 @@ m.addSources = addSources;
  * load default sources and operators
  * @return {[type]} [description]
  */
-function addDefault () {
+function default () {
   const operators = require("./operators"); // default operators
   const sources = require("./sources"); // default sources
 
@@ -89,7 +89,7 @@ function addDefault () {
   m.addOperators(operators);
   return m;
 }
-m.addDefault = addDefault;
+m.default = default;
 
 
 m.observers = {};

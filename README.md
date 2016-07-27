@@ -34,7 +34,7 @@ Node is the basic and only data structure in bouton.js. Both your data source an
 
 From Node's internal point of view: it handles the received signal with **onReceive()**, and **send()** signal to downstream node. It also handles the request made by downstream with **onRequest()**, and makes a **request()** to upstream.
 
-From external point of view: You can **push()** a signal to a node, and observe the signal emitted by the node with **observeSignal()**. You can make a request with **pull()**. And observe the request made by the node by using **observeRequest()**.
+From external point of view: You can **push()** a signal to a node, and observe the signal emitted by the node with **observe()**. You can make a request with **pull()**. And observe the request made by the node by using **observe()**.
 
 See document : Node
 
@@ -53,7 +53,7 @@ bouton.fromDOMEvent("click", document.getElementById("btn"))
 
 In node.js
 ```JavaScript
-const bouton = require("bouton").addDefault();
+const bouton = require("bouton").default();
 bouton.asList([1, 2, 3]) // asList is a passive source
   .map(v => {
     console.log(v);
@@ -172,7 +172,7 @@ register a source function.
 
 register multiple sources. accept a map of name:source pair as argument
 
-#### - bouton.addDefault()
+#### - bouton.default()
 
 register the default operators and sources.
 
