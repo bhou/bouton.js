@@ -177,5 +177,5 @@ register multiple sources. accept a map of name:source pair as argument
 register the default operators and sources.
 
 ```
-const bouton = require("bouton").addDefault();
+const bouton = require("bouton").default();
 ```
