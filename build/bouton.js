@@ -271,12 +271,12 @@
 	  }
 	  m.extend = extend;
 
+	  m.new = newInstance;
+
 	  return m;
 	}
 
 	var m = newInstance();
-
-	m.new = newInstance;
 
 	module.exports = m;
 

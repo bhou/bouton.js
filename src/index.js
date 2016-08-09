@@ -134,11 +134,11 @@ function newInstance(tags = {}) {
   }
   m.extend = extend;
 
+  m.new = newInstance;
+
   return m;
 }
 
 let m = newInstance();
-
-m.new = newInstance;
 
 module.exports = m;
