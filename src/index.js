@@ -1,13 +1,15 @@
 const Node = require("./Node");
 
-function newInstance(m) {
+function newInstance(tags = {}) {
+  let m = {};
+
   m.Node = Node;  // Node class
   m.Bouton = Node;  // alias of node
 
   m.END = Node.END; // END signal
 
   m.reserved = [
-    "id", "options", "ee", "observers", "upstreams", "downstreams",
+    "id", "options", "ee", "observers", "upstreams", "downstreams", "tags",
     "push", "onReceive", "onSignal", "onError", "onEnd", "send",
     "observe", "to", "pull", "onRequest", "request", "from", "isErrorSignal",
     "isEndSignal", "throwError", "invokeObservers"
@@ -23,13 +25,19 @@ function newInstance(m) {
       console.warn(`can't add operator '${name}', name is reserved. `);
       return m;
     }
+
     function fn(...args) {
       let node = operator(...args);
+      node.tags = tags;
       return this.to(node);
     };
 
     Node.prototype[name] = fn;
-    m[name] = operator;
+    m[name] = function(...args) {
+      let node = operator(...args);
+      node.tags = tags;
+      return node;
+    };
 
     return m;
   }
@@ -58,7 +66,11 @@ function newInstance(m) {
       console.warn(`can't add source '${name}', name is reserved. `);
       return m;
     }
-    m[name] = source;
+    m[name] = function(...args) {
+      let node = source(...args);
+      node.tags = tags;
+      return node;
+    };
     return m;
   }
   m.addSource = addSource;
@@ -70,7 +82,7 @@ function newInstance(m) {
    */
   function addSources(srcs) {
     for (let name in srcs) {
-      m[name] = srcs[name];
+      m.addSource(name, srcs[name]);
     }
     return m;
   }
@@ -122,12 +134,11 @@ function newInstance(m) {
   }
   m.extend = extend;
 
-  m.new = function() {
-    return newInstance({})
-  };
-
   return m;
 }
 
-let m = newInstance({});
+let m = newInstance();
+
+m.new = newInstance;
+
 module.exports = m;

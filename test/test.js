@@ -93,6 +93,33 @@ exports["test Node"] = {
         test.done();
       })
       .sink();
+  },
+
+  "test new instance with tags" : (test) => {
+    const bouton0 = require("../lib").default();
+
+    const bouton1 = require("../lib").new({
+      tag1 : "tag1",
+      tag2 : "tag2"
+    }).default();
+
+    let source = bouton0.asList([1, 2, 3]);
+    let act = bouton0.act(v => {});
+
+    test.equal(source.tags.tag1, undefined);
+    test.equal(source.tags.tag2, undefined);
+    test.equal(act.tags.tag1, undefined);
+    test.equal(act.tags.tag2, undefined);
+
+    source = bouton1.asList([1, 2, 3]);
+    act = bouton1.act(v => {});
+
+    test.equal(source.tags.tag1, "tag1");
+    test.equal(source.tags.tag2, "tag2");
+    test.equal(act.tags.tag1, "tag1");
+    test.equal(act.tags.tag2, "tag2");
+
+    test.done();
   }
 
 }
