@@ -78,5 +78,21 @@ exports["test Node"] = {
         test.done();
       })
       .sink();
+  },
+
+  "test new instance" : (test) => {
+    const bouton = require("../lib").new().default();
+
+    let index = 0;
+    bouton.asList([1, 2, 3])
+      .reduce(0, (a, b) => {
+        return a + b;
+      })
+      .act(v => {
+        test.equal(v, 6);
+        test.done();
+      })
+      .sink();
   }
+
 }

@@ -141,123 +141,130 @@
 
 	var Node = __webpack_require__(2);
 
-	var m = {};
+	function newInstance(m) {
+	  m.Node = Node; // Node class
+	  m.Bouton = Node; // alias of node
 
-	m.Node = Node; // Node class
-	m.Bouton = Node; // alias of node
+	  m.END = Node.END; // END signal
 
-	m.END = Node.END; // END signal
+	  m.reserved = ["id", "options", "ee", "observers", "upstreams", "downstreams", "push", "onReceive", "onSignal", "onError", "onEnd", "send", "observe", "to", "pull", "onRequest", "request", "from", "isErrorSignal", "isEndSignal", "throwError", "invokeObservers"];
+	  /**
+	   * Add an operator
+	   * @param  {string} name   - the name of the operator
+	   * @param  {function} operator - the operator function
+	   * @return {bouton}          the bouton module
+	   */
+	  function addOperator(name, operator) {
+	    if (m.reserved.indexOf(name) >= 0) {
+	      console.warn("can't add operator '" + name + "', name is reserved. ");
+	      return m;
+	    }
+	    function fn() {
+	      var node = operator.apply(undefined, arguments);
+	      return this.to(node);
+	    };
 
-	m.reserved = ["id", "options", "ee", "observers", "upstreams", "downstreams", "push", "onReceive", "onSignal", "onError", "onEnd", "send", "observe", "to", "pull", "onRequest", "request", "from", "isErrorSignal", "isEndSignal", "throwError", "invokeObservers"];
-	/**
-	 * Add an operator
-	 * @param  {string} name   - the name of the operator
-	 * @param  {function} operator - the operator function
-	 * @return {bouton}          the bouton module
-	 */
-	function addOperator(name, operator) {
-	  if (m.reserved.indexOf(name) >= 0) {
-	    console.warn("can't add operator '" + name + "', name is reserved. ");
+	    Node.prototype[name] = fn;
+	    m[name] = operator;
+
 	    return m;
 	  }
-	  function fn() {
-	    var node = operator.apply(undefined, arguments);
-	    return this.to(node);
+	  m.addOperator = addOperator;
+
+	  /**
+	   * Add multiple operators
+	   * @param {object} operators - name:operator pair
+	   * @return {bouton} the bouton module
+	   */
+	  function addOperators(ops) {
+	    for (var name in ops) {
+	      m.addOperator(name, ops[name]);
+	    }
+	  }
+	  m.addOperators = addOperators;
+
+	  /**
+	   * add a source
+	   * @param {string} name   - the source name
+	   * @param {function} source - the source function
+	   * @return {bouton}  the bouton module
+	   */
+	  function addSource(name, source) {
+	    if (m.reserved.indexOf(name) >= 0) {
+	      console.warn("can't add source '" + name + "', name is reserved. ");
+	      return m;
+	    }
+	    m[name] = source;
+	    return m;
+	  }
+	  m.addSource = addSource;
+
+	  /**
+	   * Add multiple sources
+	   * @param {object} srcs - name:source pair
+	   * @return {bouton} the bouton module
+	   */
+	  function addSources(srcs) {
+	    for (var name in srcs) {
+	      m[name] = srcs[name];
+	    }
+	    return m;
+	  }
+	  m.addSources = addSources;
+
+	  /**
+	   * load default sources and operators
+	   * @return {[type]} [description]
+	   */
+	  function extendDefault() {
+	    var operators = __webpack_require__(29); // default operators
+	    var sources = __webpack_require__(30); // default sources
+
+	    m.addSources(sources);
+	    m.addOperators(operators);
+	    return m;
+	  }
+	  m.default = extendDefault;
+
+	  m.observers = {};
+
+	  function extend(extension) {
+	    if (typeof extension === "string") {
+	      extension = __webpack_require__(31)(extension);
+	    }
+
+	    if (extension.operators) {
+	      m.addOperators(extension.operators);
+	    }
+
+	    if (extension.sources) {
+	      m.addSources(extension.sources);
+	    }
+
+	    if (extension.observers) {
+	      for (var name in extension.observers) {
+	        m.observers[name] = extension.observers[name];
+	      }
+	    }
+
+	    if (extension.others) {
+	      for (var _name in extension.others) {
+	        m[_name] = extension.others[_name];
+	      }
+	    }
+
+	    return m;
+	  }
+	  m.extend = extend;
+
+	  m.new = function () {
+	    return newInstance({});
 	  };
 
-	  Node.prototype[name] = fn;
-	  m[name] = operator;
-
 	  return m;
 	}
-	m.addOperator = addOperator;
 
-	/**
-	 * Add multiple operators
-	 * @param {object} operators - name:operator pair
-	 * @return {bouton} the bouton module
-	 */
-	function addOperators(ops) {
-	  for (var name in ops) {
-	    m.addOperator(name, ops[name]);
-	  }
-	}
-	m.addOperators = addOperators;
-
-	/**
-	 * add a source
-	 * @param {string} name   - the source name
-	 * @param {function} source - the source function
-	 * @return {bouton}  the bouton module
-	 */
-	function addSource(name, source) {
-	  if (m.reserved.indexOf(name) >= 0) {
-	    console.warn("can't add source '" + name + "', name is reserved. ");
-	    return m;
-	  }
-	  m[name] = source;
-	  return m;
-	}
-	m.addSource = addSource;
-
-	/**
-	 * Add multiple sources
-	 * @param {object} srcs - name:source pair
-	 * @return {bouton} the bouton module
-	 */
-	function addSources(srcs) {
-	  for (var name in srcs) {
-	    m[name] = srcs[name];
-	  }
-	  return m;
-	}
-	m.addSources = addSources;
-
-	/**
-	 * load default sources and operators
-	 * @return {[type]} [description]
-	 */
-	function extendDefault() {
-	  var operators = __webpack_require__(29); // default operators
-	  var sources = __webpack_require__(30); // default sources
-
-	  m.addSources(sources);
-	  m.addOperators(operators);
-	  return m;
-	}
-	m.default = extendDefault;
-
-	m.observers = {};
-
-	function extend(extension) {
-	  if (typeof extension === "string") {
-	    extension = __webpack_require__(31)(extension);
-	  }
-
-	  if (extension.operators) {
-	    m.addOperators(extension.operators);
-	  }
-
-	  if (extension.sources) {
-	    m.addSources(extension.sources);
-	  }
-
-	  if (extension.observers) {
-	    for (var name in extension.observers) {
-	      m.observers[name] = extension.observers[name];
-	    }
-	  }
-
-	  if (extension.others) {
-	    for (var _name in extension.others) {
-	      m[_name] = extension.others[_name];
-	    }
-	  }
-
-	  return m;
-	}
-	m.extend = extend;
-
+	var m = newInstance({});
 	module.exports = m;
 
 /***/ },
