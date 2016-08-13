@@ -3,6 +3,8 @@ const Node = require("./Node");
 function newInstance(tags = {}) {
   let m = {};
 
+  m._tags = tags;
+
   m.Node = Node;  // Node class
   m.Bouton = Node;  // alias of node
 
@@ -28,14 +30,14 @@ function newInstance(tags = {}) {
 
     function fn(...args) {
       let node = operator(...args);
-      node.tags = tags;
+      node.tags = m._tags;
       return this.to(node);
     };
 
     Node.prototype[name] = fn;
     m[name] = function(...args) {
       let node = operator(...args);
-      node.tags = tags;
+      node.tags = m._tags;
       return node;
     };
 
@@ -68,7 +70,7 @@ function newInstance(tags = {}) {
     }
     m[name] = function(...args) {
       let node = source(...args);
-      node.tags = tags;
+      node.tags = m._tags;
       return node;
     };
     return m;
@@ -134,11 +136,10 @@ function newInstance(tags = {}) {
   }
   m.extend = extend;
 
-  m.new = newInstance;
-
   return m;
 }
 
 let m = newInstance();
+m.new = newInstance;
 
 module.exports = m;
