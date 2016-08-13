@@ -168,7 +168,7 @@
 
 	    function fn() {
 	      var node = operator.apply(undefined, arguments);
-	      node.tags = m._tags;
+	      node.tags = this.tags;
 	      return this.to(node);
 	    };
 

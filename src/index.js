@@ -30,7 +30,7 @@ function newInstance(tags = {}) {
 
     function fn(...args) {
       let node = operator(...args);
-      node.tags = m._tags;
+      node.tags = this.tags;
       return this.to(node);
     };
 

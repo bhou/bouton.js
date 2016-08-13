@@ -118,8 +118,8 @@ exports["test Node"] = {
 
     let source1 = bouton1.asList([1, 2, 3]);
     let source2 = bouton2.asList([1, 2, 3]);
-    let act1 = bouton1.act(v => {});
-    let act2 = bouton2.act(v => {});
+    let act1 = source1.act(v => {});
+    let act2 = source2.act(v => {});
 
     test.equal(source1.tags.tag1, "tag1");
     test.equal(source1.tags.tag2, "tag2");
