@@ -372,12 +372,16 @@
 	    }
 	  }, {
 	    key: "send",
-	    value: function send(signal, interruptible) {
+	    value: function send(signal) {
 	      var _this2 = this;
+
+	      var interruptible = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
 
 	      this.invokeObservers("send", signal);
 	      if (interruptible === false || !this.isInterruptibleSignal(signal)) {
-	        this.ee.emit("outgoing-" + this.id, signal);
+	        for (var id in this.downstreams) {
+	          this.downstreams[id].onReceive(signal);
+	        }
 	        return this;
 	      }
 	      setImmediate(function () {

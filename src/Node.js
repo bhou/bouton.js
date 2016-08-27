@@ -66,10 +66,12 @@ class Node {
     return this;
   }
 
-  send(signal : any, interruptible : ?boolean) : Node {
+  send(signal : any, interruptible : ?boolean = true) : Node {
     this.invokeObservers("send", signal);
     if (interruptible === false || !this.isInterruptibleSignal(signal)) {
-      this.ee.emit("outgoing-" + this.id, signal);
+      for (let id in this.downstreams) {
+        this.downstreams[id].onReceive(signal);
+      }
       return this;
     }
     setImmediate(()=> {
