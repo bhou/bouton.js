@@ -66,8 +66,12 @@ class Node {
     return this;
   }
 
-  send(signal : any) : Node {
+  send(signal : any, sync : ?boolean) : Node {
     this.invokeObservers("send", signal);
+    if (!sync && this.isInterruptibleSignal(signal)) {
+      this.ee.emit("outgoing-" + this.id, signal);
+      return this;
+    }
     setImmediate(()=> {
       this.ee.emit("outgoing-" + this.id, signal);
     });
@@ -119,6 +123,10 @@ class Node {
     this.upstreams[upstream.id] = upstream;
     this.invokeObservers("from", upstream);
     return this;
+  }
+
+  isInterruptibleSignal(signal : any) : boolean {
+    return false;
   }
 
   isErrorSignal(signal : any) : boolean {

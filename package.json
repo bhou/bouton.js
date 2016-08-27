@@ -1,6 +1,6 @@
 {
   "name": "bouton",
-  "version": "0.3.17",
+  "version": "0.4.0",
   "description": "A framework to build your reactive library",
   "main": "lib/index.js",
   "dependencies": {
@@ -28,7 +28,8 @@
     "build-watch": "node_modules/babel-cli/bin/babel.js -w ./flow-output --out-dir ./lib --presets es2015",
     "webpack": "node_modules/webpack/bin/webpack.js",
     "webpack-watch": "node_modules/webpack/bin/webpack.js -w",
-    "webpack-prod": "node_modules/webpack/bin/webpack.js -p --entry ./lib/web-entry.js --output-filename bouton.min.js"
+    "webpack-prod": "node_modules/webpack/bin/webpack.js -p --entry ./lib/web-entry.js --output-filename bouton.min.js",
+    "webpack-compatible": "node_modules/webpack/bin/webpack.js -p --entry ./lib/web-entry.js --output-filename bouton.compatible.min.js"
   },
   "repository": {
     "type": "git",

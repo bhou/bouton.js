@@ -371,10 +371,14 @@
 	    }
 	  }, {
 	    key: "send",
-	    value: function send(signal) {
+	    value: function send(signal, sync) {
 	      var _this2 = this;
 
 	      this.invokeObservers("send", signal);
+	      if (!sync && this.isInterruptibleSignal(signal)) {
+	        this.ee.emit("outgoing-" + this.id, signal);
+	        return this;
+	      }
 	      setImmediate(function () {
 	        _this2.ee.emit("outgoing-" + _this2.id, signal);
 	      });
@@ -438,6 +442,11 @@
 	      this.upstreams[upstream.id] = upstream;
 	      this.invokeObservers("from", upstream);
 	      return this;
+	    }
+	  }, {
+	    key: "isInterruptibleSignal",
+	    value: function isInterruptibleSignal(signal) {
+	      return false;
 	    }
 	  }, {
 	    key: "isErrorSignal",
