@@ -66,9 +66,9 @@ class Node {
     return this;
   }
 
-  send(signal : any, sync : ?boolean) : Node {
+  send(signal : any, interruptible : ?boolean) : Node {
     this.invokeObservers("send", signal);
-    if (!sync && this.isInterruptibleSignal(signal)) {
+    if (interruptible === false || !this.isInterruptibleSignal(signal)) {
       this.ee.emit("outgoing-" + this.id, signal);
       return this;
     }
@@ -126,7 +126,7 @@ class Node {
   }
 
   isInterruptibleSignal(signal : any) : boolean {
-    return false;
+    return true;
   }
 
   isErrorSignal(signal : any) : boolean {

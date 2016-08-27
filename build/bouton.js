@@ -372,11 +372,11 @@
 	    }
 	  }, {
 	    key: "send",
-	    value: function send(signal, sync) {
+	    value: function send(signal, interruptible) {
 	      var _this2 = this;
 
 	      this.invokeObservers("send", signal);
-	      if (!sync && this.isInterruptibleSignal(signal)) {
+	      if (interruptible === false || !this.isInterruptibleSignal(signal)) {
 	        this.ee.emit("outgoing-" + this.id, signal);
 	        return this;
 	      }
@@ -447,7 +447,7 @@
 	  }, {
 	    key: "isInterruptibleSignal",
 	    value: function isInterruptibleSignal(signal) {
-	      return false;
+	      return true;
 	    }
 	  }, {
 	    key: "isErrorSignal",
