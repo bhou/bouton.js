@@ -24,9 +24,7 @@ class Node {
 
   push(signal : any, interruptible : ?boolean = true) : Node {
 		if (interruptible === false || !this.isInterruptibleSignal(signal)) {
-      for (let id in this.downstreams) {
-        this.onReceive(signal);
-      }
+      this.onReceive(signal);
       return this;
     }
 
