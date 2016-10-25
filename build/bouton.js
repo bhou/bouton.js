@@ -324,6 +324,15 @@
 	    value: function push(signal) {
 	      var _this = this;
 
+	      var interruptible = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
+
+	      if (interruptible === false || !this.isInterruptibleSignal(signal)) {
+	        for (var id in this.downstreams) {
+	          this.onReceive(signal);
+	        }
+	        return this;
+	      }
+
 	      setImmediate(function () {
 	        _this.onReceive(signal);
 	      });
