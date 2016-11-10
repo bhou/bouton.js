@@ -273,6 +273,32 @@
 	  }
 	  m.extend = extend;
 
+	  /**
+	   * set tags for the bouton object
+	   */
+	  function setTags(tags) {
+	    m._tags = tags;
+	  }
+	  m.setTags = setTags;
+
+	  /**
+	   * set single tag for the bouton object
+	   */
+	  function setTag(name, tag) {
+	    m._tags[name] = tag;
+	  }
+	  m.setTag = setTag;
+
+	  /**
+	   * remove tag
+	   */
+	  function removeTag(name) {
+	    if (m._tags.hasOwnProperty(name)) {
+	      delete m._tags[name];
+	    }
+	  }
+	  m.removeTag = removeTag;
+
 	  return m;
 	}
 
