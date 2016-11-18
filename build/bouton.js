@@ -141,6 +141,14 @@
 
 	var Node = __webpack_require__(2);
 
+	function shadowCopy(src, target) {
+	  for (var k in src) {
+	    if (src.hasOwnProperty(k)) {
+	      target[k] = src[k];
+	    }
+	  }
+	}
+
 	function newInstance() {
 	  var tags = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
@@ -168,14 +176,16 @@
 
 	    function fn() {
 	      var node = operator.apply(undefined, arguments);
-	      node.tags = this.tags;
+	      node.tags = {};
+	      shadowCopy(this.tags, node.tags);
 	      return this.to(node);
 	    };
 
 	    Node.prototype[name] = fn;
 	    m[name] = function () {
 	      var node = operator.apply(undefined, arguments);
-	      node.tags = m._tags;
+	      node.tags = {};
+	      shadowCopy(m._tags, node.tags);
 	      return node;
 	    };
 
@@ -208,7 +218,8 @@
 	    }
 	    m[name] = function () {
 	      var node = source.apply(undefined, arguments);
-	      node.tags = m._tags;
+	      node.tags = {};
+	      shadowCopy(m._tags, node.tags);
 	      return node;
 	    };
 	    return m;

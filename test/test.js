@@ -134,7 +134,7 @@ exports["test Node"] = {
     test.done();
   },
 
-  "test new instance with dynamic tag" : (test) => {
+  "test new instance with copied tag" : (test) => {
     const bouton0 = require("../lib").default();
     const bouton1 = require("../lib").new({
       tag1: 'tag1'
@@ -160,14 +160,22 @@ exports["test Node"] = {
     let act2 = source2.act(v => {});
 
     test.equal(source1.tags.tag1, "tag1");
-    test.equal(source1.tags.tag2, "tag2");
+    test.ok(source1.tags.tag2 !== "tag2");
     test.equal(act1.tags.tag1, "tag1");
-    test.equal(act1.tags.tag2, "tag2");
+    test.ok(act1.tags.tag2 !== "tag2");
 
-    test.equal(source2.tags.tag1, "tag1.2");
-    test.equal(source2.tags.tag2, "tag2.2");
-    test.equal(act2.tags.tag1, "tag1.2");
-    test.equal(act2.tags.tag2, "tag2.2");
+    test.ok(source2.tags.tag1 !== "tag1.2");
+    test.ok(source2.tags.tag2 !== "tag2.2");
+    test.ok(act2.tags.tag1 !== "tag1.2");
+    test.ok(act2.tags.tag2 !== "tag2.2");
+
+    let newAct1 = bouton1.act(v = {});
+    let newAct2 = bouton2.act(v = {});
+
+    test.equal(newAct1.tags.tag2, 'tag2');
+    test.equal(newAct2.tags.tag1, 'tag1.2');
+    test.equal(newAct2.tags.tag2, 'tag2.2');
+
 
     test.done();
   }

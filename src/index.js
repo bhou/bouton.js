@@ -1,5 +1,13 @@
 const Node = require("./Node");
 
+function shadowCopy(src, target) {
+  for (let k in src) {
+    if (src.hasOwnProperty(k)) {
+      target[k] = src[k];
+    }
+  }
+}
+
 function newInstance(tags = {}) {
   let m = {};
 
@@ -30,14 +38,16 @@ function newInstance(tags = {}) {
 
     function fn(...args) {
       let node = operator(...args);
-      node.tags = this.tags;
+      node.tags = {};
+      shadowCopy(this.tags, node.tags);
       return this.to(node);
     };
 
     Node.prototype[name] = fn;
     m[name] = function(...args) {
       let node = operator(...args);
-      node.tags = m._tags;
+      node.tags = {};
+      shadowCopy(m._tags, node.tags);
       return node;
     };
 
@@ -70,7 +80,8 @@ function newInstance(tags = {}) {
     }
     m[name] = function(...args) {
       let node = source(...args);
-      node.tags = m._tags;
+      node.tags = {};
+      shadowCopy(m._tags, node.tags);
       return node;
     };
     return m;
