@@ -23,7 +23,7 @@ class Node {
   }
 
   push(signal : any, interruptible : ?boolean = true) : Node {
-		if (interruptible === false || !this.isInterruptibleSignal(signal)) {
+    if (interruptible === false || !this.isInterruptibleSignal(signal)) {
       this.onReceive(signal);
       return this;
     }
@@ -155,15 +155,15 @@ class Node {
     data.unshift(when)
     data.unshift(this);
     try {
-      this.observers.forEach(fn => {
-        fn.apply(this, data);
-      });
-
-      // run globally registered observers
+      // run globally registered observers, first
       let globalObservers = require("./index").observers;
       for (let name in globalObservers) {
         globalObservers[name].apply(this, data);
       };
+      
+      this.observers.forEach(fn => {
+        fn.apply(this, data);
+      });
     } catch (err) {
       console.error(err.message);
     }

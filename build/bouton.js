@@ -527,15 +527,15 @@
 	      data.unshift(when);
 	      data.unshift(this);
 	      try {
-	        this.observers.forEach(function (fn) {
-	          fn.apply(_this6, data);
-	        });
-
-	        // run globally registered observers
+	        // run globally registered observers, first
 	        var globalObservers = __webpack_require__(1).observers;
 	        for (var name in globalObservers) {
 	          globalObservers[name].apply(this, data);
 	        };
+
+	        this.observers.forEach(function (fn) {
+	          fn.apply(_this6, data);
+	        });
 	      } catch (err) {
 	        console.error(err.message);
 	      }
