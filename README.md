@@ -1,5 +1,7 @@
 # bouton.js
 
+![build status](https://travis-ci.org/bhou/bouton.js.svg?branch=master)
+
 A framework to build your reactive library. It provides a basic feature set for your reactive library:
 
 - asynchronous
