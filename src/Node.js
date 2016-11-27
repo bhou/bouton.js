@@ -11,7 +11,7 @@ class Node {
   observers : [(node : Node, when : string, ... data : any) => void];
   upstreams : NodeRef;
   downstreams : NodeRef;
-  tags : any;
+  meta : any;
   constructor(options : any, eventemitter : ?EventEmitter) {
     this.id = uuid.v1();
     this.options = options;
@@ -19,7 +19,7 @@ class Node {
     this.observers = [];
     this.upstreams = {};
     this.downstreams = {};
-    this.tags = {};
+    this.meta = {};
   }
 
   push(signal : any, interruptible : ?boolean = true) : Node {

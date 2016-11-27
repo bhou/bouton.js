@@ -1,6 +1,6 @@
 {
   "name": "bouton",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "description": "A framework to build your reactive library",
   "main": "lib/index.js",
   "dependencies": {

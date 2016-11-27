@@ -8,10 +8,10 @@ function shadowCopy(src, target) {
   }
 }
 
-function newInstance(tags = {}) {
+function newInstance(meta = {}) {
   let m = {};
 
-  m._tags = tags;
+  m._meta = meta;
 
   m.Node = Node;  // Node class
   m.Bouton = Node;  // alias of node
@@ -19,7 +19,7 @@ function newInstance(tags = {}) {
   m.END = Node.END; // END signal
 
   m.reserved = [
-    "id", "options", "ee", "observers", "upstreams", "downstreams", "tags",
+    "id", "options", "ee", "observers", "upstreams", "downstreams", "meta",
     "push", "onReceive", "onSignal", "onError", "onEnd", "send",
     "observe", "to", "pull", "onRequest", "request", "from", "isErrorSignal",
     "isEndSignal", "throwError", "invokeObservers"
@@ -38,16 +38,16 @@ function newInstance(tags = {}) {
 
     function fn(...args) {
       let node = operator(...args);
-      node.tags = {};
-      shadowCopy(this.tags, node.tags);
+      node.meta = {};
+      shadowCopy(this.meta, node.meta);
       return this.to(node);
     };
 
     Node.prototype[name] = fn;
     m[name] = function(...args) {
       let node = operator(...args);
-      node.tags = {};
-      shadowCopy(m._tags, node.tags);
+      node.meta = {};
+      shadowCopy(m._meta, node.meta);
       return node;
     };
 
@@ -80,8 +80,8 @@ function newInstance(tags = {}) {
     }
     m[name] = function(...args) {
       let node = source(...args);
-      node.tags = {};
-      shadowCopy(m._tags, node.tags);
+      node.meta = {};
+      shadowCopy(m._meta, node.meta);
       return node;
     };
     return m;
@@ -148,30 +148,30 @@ function newInstance(tags = {}) {
   m.extend = extend;
 
   /**
-   * set tags for the bouton object
+   * set meta for the bouton object
    */
-  function setTags (tags) {
-    m._tags = tags;
+  function setMeta (metadata) {
+    m._meta = metadata;
   }
-  m.setTags = setTags;
+  m.setMeta = setMeta;
 
   /**
-   * set single tag for the bouton object
+   * set single meta data for the bouton object
    */
-  function setTag (name, tag) {
-    m._tags[name] = tag;
+  function addMeta (name, meta) {
+    m._meta[name] = meta;
   }
-  m.setTag = setTag;
+  m.addMeta = addMeta;
 
   /**
-   * remove tag
+   * remove meta data
    */
-  function removeTag (name) {
-    if (m._tags.hasOwnProperty(name)) {
-      delete m._tags[name];
+  function removeMeta (name) {
+    if (m._meta.hasOwnProperty(name)) {
+      delete m._meta[name];
     }
   }
-  m.removeTag = removeTag;
+  m.removeMeta = removeMeta;
 
   return m;
 }

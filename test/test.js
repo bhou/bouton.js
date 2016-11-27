@@ -95,7 +95,7 @@ exports["test Node"] = {
       .sink();
   },
 
-  "test new instance with tags" : (test) => {
+  "test new instance with metadata" : (test) => {
     const bouton0 = require("../lib").default();
 
     const bouton1 = require("../lib").new({
@@ -111,25 +111,25 @@ exports["test Node"] = {
     let source = bouton0.asList([1, 2, 3]);
     let act = bouton0.act(v => {});
 
-    test.equal(source.tags.tag1, undefined);
-    test.equal(source.tags.tag2, undefined);
-    test.equal(act.tags.tag1, undefined);
-    test.equal(act.tags.tag2, undefined);
+    test.equal(source.meta.tag1, undefined);
+    test.equal(source.meta.tag2, undefined);
+    test.equal(act.meta.tag1, undefined);
+    test.equal(act.meta.tag2, undefined);
 
     let source1 = bouton1.asList([1, 2, 3]);
     let source2 = bouton2.asList([1, 2, 3]);
     let act1 = source1.act(v => {});
     let act2 = source2.act(v => {});
 
-    test.equal(source1.tags.tag1, "tag1");
-    test.equal(source1.tags.tag2, "tag2");
-    test.equal(act1.tags.tag1, "tag1");
-    test.equal(act1.tags.tag2, "tag2");
+    test.equal(source1.meta.tag1, "tag1");
+    test.equal(source1.meta.tag2, "tag2");
+    test.equal(act1.meta.tag1, "tag1");
+    test.equal(act1.meta.tag2, "tag2");
 
-    test.equal(source2.tags.tag1, "tag1.2");
-    test.equal(source2.tags.tag2, "tag2.2");
-    test.equal(act2.tags.tag1, "tag1.2");
-    test.equal(act2.tags.tag2, "tag2.2");
+    test.equal(source2.meta.tag1, "tag1.2");
+    test.equal(source2.meta.tag2, "tag2.2");
+    test.equal(act2.meta.tag1, "tag1.2");
+    test.equal(act2.meta.tag2, "tag2.2");
 
     test.done();
   },
@@ -144,37 +144,37 @@ exports["test Node"] = {
     let source = bouton0.asList([1, 2, 3]);
     let act = bouton0.act(v => {});
 
-    test.equal(source.tags.tag1, undefined);
-    test.equal(source.tags.tag2, undefined);
-    test.equal(act.tags.tag1, undefined);
-    test.equal(act.tags.tag2, undefined);
+    test.equal(source.meta.tag1, undefined);
+    test.equal(source.meta.tag2, undefined);
+    test.equal(act.meta.tag1, undefined);
+    test.equal(act.meta.tag2, undefined);
 
     let source1 = bouton1.asList([1, 2, 3]);
     let source2 = bouton2.asList([1, 2, 3]);
 
-    bouton1.setTag('tag2', 'tag2');
+    bouton1.addMeta('tag2', 'tag2');
     let act1 = source1.act(v => {});
 
-    bouton2.setTag('tag1', 'tag1.2');
-    bouton2.setTag('tag2', 'tag2.2');
+    bouton2.addMeta('tag1', 'tag1.2');
+    bouton2.addMeta('tag2', 'tag2.2');
     let act2 = source2.act(v => {});
 
-    test.equal(source1.tags.tag1, "tag1");
-    test.ok(source1.tags.tag2 !== "tag2");
-    test.equal(act1.tags.tag1, "tag1");
-    test.ok(act1.tags.tag2 !== "tag2");
+    test.equal(source1.meta.tag1, "tag1");
+    test.ok(source1.meta.tag2 !== "tag2");
+    test.equal(act1.meta.tag1, "tag1");
+    test.ok(act1.meta.tag2 !== "tag2");
 
-    test.ok(source2.tags.tag1 !== "tag1.2");
-    test.ok(source2.tags.tag2 !== "tag2.2");
-    test.ok(act2.tags.tag1 !== "tag1.2");
-    test.ok(act2.tags.tag2 !== "tag2.2");
+    test.ok(source2.meta.tag1 !== "tag1.2");
+    test.ok(source2.meta.tag2 !== "tag2.2");
+    test.ok(act2.meta.tag1 !== "tag1.2");
+    test.ok(act2.meta.tag2 !== "tag2.2");
 
     let newAct1 = bouton1.act(v = {});
     let newAct2 = bouton2.act(v = {});
 
-    test.equal(newAct1.tags.tag2, 'tag2');
-    test.equal(newAct2.tags.tag1, 'tag1.2');
-    test.equal(newAct2.tags.tag2, 'tag2.2');
+    test.equal(newAct1.meta.tag2, 'tag2');
+    test.equal(newAct2.meta.tag1, 'tag1.2');
+    test.equal(newAct2.meta.tag2, 'tag2.2');
 
 
     test.done();

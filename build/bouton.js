@@ -150,18 +150,18 @@
 	}
 
 	function newInstance() {
-	  var tags = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	  var meta = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
 	  var m = {};
 
-	  m._tags = tags;
+	  m._meta = meta;
 
 	  m.Node = Node; // Node class
 	  m.Bouton = Node; // alias of node
 
 	  m.END = Node.END; // END signal
 
-	  m.reserved = ["id", "options", "ee", "observers", "upstreams", "downstreams", "tags", "push", "onReceive", "onSignal", "onError", "onEnd", "send", "observe", "to", "pull", "onRequest", "request", "from", "isErrorSignal", "isEndSignal", "throwError", "invokeObservers"];
+	  m.reserved = ["id", "options", "ee", "observers", "upstreams", "downstreams", "meta", "push", "onReceive", "onSignal", "onError", "onEnd", "send", "observe", "to", "pull", "onRequest", "request", "from", "isErrorSignal", "isEndSignal", "throwError", "invokeObservers"];
 	  /**
 	   * Add an operator
 	   * @param  {string} name   - the name of the operator
@@ -176,16 +176,16 @@
 
 	    function fn() {
 	      var node = operator.apply(undefined, arguments);
-	      node.tags = {};
-	      shadowCopy(this.tags, node.tags);
+	      node.meta = {};
+	      shadowCopy(this.meta, node.meta);
 	      return this.to(node);
 	    };
 
 	    Node.prototype[name] = fn;
 	    m[name] = function () {
 	      var node = operator.apply(undefined, arguments);
-	      node.tags = {};
-	      shadowCopy(m._tags, node.tags);
+	      node.meta = {};
+	      shadowCopy(m._meta, node.meta);
 	      return node;
 	    };
 
@@ -218,8 +218,8 @@
 	    }
 	    m[name] = function () {
 	      var node = source.apply(undefined, arguments);
-	      node.tags = {};
-	      shadowCopy(m._tags, node.tags);
+	      node.meta = {};
+	      shadowCopy(m._meta, node.meta);
 	      return node;
 	    };
 	    return m;
@@ -285,30 +285,30 @@
 	  m.extend = extend;
 
 	  /**
-	   * set tags for the bouton object
+	   * set meta for the bouton object
 	   */
-	  function setTags(tags) {
-	    m._tags = tags;
+	  function setMeta(metadata) {
+	    m._meta = metadata;
 	  }
-	  m.setTags = setTags;
+	  m.setMeta = setMeta;
 
 	  /**
-	   * set single tag for the bouton object
+	   * set single meta data for the bouton object
 	   */
-	  function setTag(name, tag) {
-	    m._tags[name] = tag;
+	  function addMeta(name, meta) {
+	    m._meta[name] = meta;
 	  }
-	  m.setTag = setTag;
+	  m.addMeta = addMeta;
 
 	  /**
-	   * remove tag
+	   * remove meta data
 	   */
-	  function removeTag(name) {
-	    if (m._tags.hasOwnProperty(name)) {
-	      delete m._tags[name];
+	  function removeMeta(name) {
+	    if (m._meta.hasOwnProperty(name)) {
+	      delete m._meta[name];
 	    }
 	  }
-	  m.removeTag = removeTag;
+	  m.removeMeta = removeMeta;
 
 	  return m;
 	}
@@ -353,7 +353,7 @@
 	    this.observers = [];
 	    this.upstreams = {};
 	    this.downstreams = {};
-	    this.tags = {};
+	    this.meta = {};
 	  }
 
 	  _createClass(Node, [{
