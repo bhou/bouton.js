@@ -12,6 +12,7 @@ function newInstance(meta = {}) {
   let m = {};
 
   m._meta = meta;
+  m._nodes = new Map();
 
   m.Node = Node;  // Node class
   m.Bouton = Node;  // alias of node
@@ -40,6 +41,9 @@ function newInstance(meta = {}) {
       let node = operator(...args);
       node.meta = {};
       shadowCopy(this.meta, node.meta);
+      let key = [(m._meta.namespace && m._meta.namespace !== '') ? m._meta.namespace : '__ANON_NS__',
+        node.name ? node.name : node.id].join('.');
+      m._nodes.set(key, node);
       return this.to(node);
     };
 
@@ -48,6 +52,9 @@ function newInstance(meta = {}) {
       let node = operator(...args);
       node.meta = {};
       shadowCopy(m._meta, node.meta);
+      let key = [(m._meta.namespace && m._meta.namespace !== '') ? m._meta.namespace : '__ANON_NS__',
+        node.name ? node.name : node.id].join('.');
+      m._nodes.set(key, node);
       return node;
     };
 
@@ -82,6 +89,10 @@ function newInstance(meta = {}) {
       let node = source(...args);
       node.meta = {};
       shadowCopy(m._meta, node.meta);
+      
+      let key = [(m._meta.namespace && m._meta.namespace !== '') ? m._meta.namespace : '__ANON_NS__',
+        node.name ? node.name : node.id].join('.');
+      m._nodes.set(key, node);
       return node;
     };
     return m;

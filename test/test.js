@@ -134,6 +134,23 @@ exports["test Node"] = {
     test.done();
   },
 
+  "test find by name": (test) => {
+    const bouton = require("../lib").new({
+      tag1 : "tag1",
+      tag2 : "tag2"
+    }).default();
+  
+    let source = bouton.asList([1, 2, 3]);
+    let act = bouton.act(v => {});
+
+    let nodes = bouton._nodes;
+
+    test.ok(nodes.has('__ANON_NS__.' + source.id));
+    test.ok(nodes.has('__ANON_NS__.' + act.id));
+
+    test.done();
+  },
+
   "test new instance with copied tag" : (test) => {
     const bouton0 = require("../lib").default();
     const bouton1 = require("../lib").new({

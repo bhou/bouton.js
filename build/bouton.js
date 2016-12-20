@@ -155,6 +155,7 @@
 	  var m = {};
 
 	  m._meta = meta;
+	  m._nodes = new Map();
 
 	  m.Node = Node; // Node class
 	  m.Bouton = Node; // alias of node
@@ -178,6 +179,8 @@
 	      var node = operator.apply(undefined, arguments);
 	      node.meta = {};
 	      shadowCopy(this.meta, node.meta);
+	      var key = [m._meta.namespace && m._meta.namespace !== '' ? m._meta.namespace : '__ANON_NS__', node.name ? node.name : node.id].join('.');
+	      m._nodes.set(key, node);
 	      return this.to(node);
 	    };
 
@@ -186,6 +189,8 @@
 	      var node = operator.apply(undefined, arguments);
 	      node.meta = {};
 	      shadowCopy(m._meta, node.meta);
+	      var key = [m._meta.namespace && m._meta.namespace !== '' ? m._meta.namespace : '__ANON_NS__', node.name ? node.name : node.id].join('.');
+	      m._nodes.set(key, node);
 	      return node;
 	    };
 
@@ -220,6 +225,9 @@
 	      var node = source.apply(undefined, arguments);
 	      node.meta = {};
 	      shadowCopy(m._meta, node.meta);
+
+	      var key = [m._meta.namespace && m._meta.namespace !== '' ? m._meta.namespace : '__ANON_NS__', node.name ? node.name : node.id].join('.');
+	      m._nodes.set(key, node);
 	      return node;
 	    };
 	    return m;
