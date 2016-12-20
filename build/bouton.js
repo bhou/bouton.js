@@ -155,7 +155,7 @@
 	  var m = {};
 
 	  m._meta = meta;
-	  m._nodes = new Map();
+	  m._indexers = new Map();
 
 	  m.Node = Node; // Node class
 	  m.Bouton = Node; // alias of node
@@ -163,6 +163,34 @@
 	  m.END = Node.END; // END signal
 
 	  m.reserved = ["id", "options", "ee", "observers", "upstreams", "downstreams", "meta", "push", "onReceive", "onSignal", "onError", "onEnd", "send", "observe", "to", "pull", "onRequest", "request", "from", "isErrorSignal", "isEndSignal", "throwError", "invokeObservers"];
+
+	  function indexNode(node) {
+	    var _iteratorNormalCompletion = true;
+	    var _didIteratorError = false;
+	    var _iteratorError = undefined;
+
+	    try {
+	      for (var _iterator = m._indexers.values()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	        var indexer = _step.value;
+
+	        indexer(node);
+	      }
+	    } catch (err) {
+	      _didIteratorError = true;
+	      _iteratorError = err;
+	    } finally {
+	      try {
+	        if (!_iteratorNormalCompletion && _iterator.return) {
+	          _iterator.return();
+	        }
+	      } finally {
+	        if (_didIteratorError) {
+	          throw _iteratorError;
+	        }
+	      }
+	    }
+	  }
+
 	  /**
 	   * Add an operator
 	   * @param  {string} name   - the name of the operator
@@ -179,8 +207,7 @@
 	      var node = operator.apply(undefined, arguments);
 	      node.meta = {};
 	      shadowCopy(this.meta, node.meta);
-	      var key = [m._meta.namespace && m._meta.namespace !== '' ? m._meta.namespace : '__ANON_NS__', node.name ? node.name : node.id].join('.');
-	      m._nodes.set(key, node);
+	      indexNode(node);
 	      return this.to(node);
 	    };
 
@@ -189,8 +216,7 @@
 	      var node = operator.apply(undefined, arguments);
 	      node.meta = {};
 	      shadowCopy(m._meta, node.meta);
-	      var key = [m._meta.namespace && m._meta.namespace !== '' ? m._meta.namespace : '__ANON_NS__', node.name ? node.name : node.id].join('.');
-	      m._nodes.set(key, node);
+	      indexNode(node);
 	      return node;
 	    };
 
@@ -225,9 +251,7 @@
 	      var node = source.apply(undefined, arguments);
 	      node.meta = {};
 	      shadowCopy(m._meta, node.meta);
-
-	      var key = [m._meta.namespace && m._meta.namespace !== '' ? m._meta.namespace : '__ANON_NS__', node.name ? node.name : node.id].join('.');
-	      m._nodes.set(key, node);
+	      indexNode(node);
 	      return node;
 	    };
 	    return m;
@@ -246,6 +270,38 @@
 	    return m;
 	  }
 	  m.addSources = addSources;
+
+	  /**
+	   * add querier 
+	   * @param {string} name - the querier name
+	   * @param {object} querier - the querier object with query method
+	   * @return {bouton} the bouton module
+	   */
+	  function addQuerier(name, querier) {
+	    m[name] = function () {
+	      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	        args[_key] = arguments[_key];
+	      }
+
+	      return querier.query.apply(querier, [m].concat(args));
+	    };
+	    return m;
+	  }
+	  m.addQuerier = addQuerier;
+
+	  /**
+	   * add indexer 
+	   * @param {string} name - the indexer name
+	   * @param {object} indexer - the indexer object with index method
+	   * @return {bouton} the bouton module
+	   */
+	  function addIndexer(name, indexer) {
+	    m._indexers.set(name, function (node) {
+	      indexer.index(m, node);
+	    });
+	    return m;
+	  }
+	  m.addIndexer = addIndexer;
 
 	  /**
 	   * load default sources and operators
@@ -282,9 +338,21 @@
 	      }
 	    }
 
+	    if (extension.indexers) {
+	      for (var _name in extension.indexers) {
+	        m.addIndexer(_name, extension.indexers[_name]);
+	      }
+	    }
+
+	    if (extension.queriers) {
+	      for (var _name2 in extension.queriers) {
+	        m.addQuerier(_name2, extension.queriers[_name2]);
+	      }
+	    }
+
 	    if (extension.others) {
-	      for (var _name in extension.others) {
-	        m[_name] = extension.others[_name];
+	      for (var _name3 in extension.others) {
+	        m[_name3] = extension.others[_name3];
 	      }
 	    }
 

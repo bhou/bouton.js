@@ -139,14 +139,25 @@ exports["test Node"] = {
       tag1 : "tag1",
       tag2 : "tag2"
     }).default();
+    
+    let idIndex = {}
+    let accessor = {
+      index: (m, node) => {
+        idIndex[node.id] = node;
+      },
+      query: (m, id) => {
+        return idIndex[id];
+      }
+    }
+  
+    bouton.addIndexer('id_indexer', accessor);
+    bouton.addQuerier('getNodeById', accessor);
   
     let source = bouton.asList([1, 2, 3]);
     let act = bouton.act(v => {});
 
-    let nodes = bouton._nodes;
-
-    test.ok(nodes.has('__ANON_NS__.' + source.id));
-    test.ok(nodes.has('__ANON_NS__.' + act.id));
+    test.ok(source.id, bouton.getNodeById(source.id).id);
+    test.ok(act.id, bouton.getNodeById(act.id).id);
 
     test.done();
   },

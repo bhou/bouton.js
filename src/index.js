@@ -8,11 +8,12 @@ function shadowCopy(src, target) {
   }
 }
 
+
 function newInstance(meta = {}) {
   let m = {};
 
   m._meta = meta;
-  m._nodes = new Map();
+  m._indexers = new Map();
 
   m.Node = Node;  // Node class
   m.Bouton = Node;  // alias of node
@@ -25,6 +26,13 @@ function newInstance(meta = {}) {
     "observe", "to", "pull", "onRequest", "request", "from", "isErrorSignal",
     "isEndSignal", "throwError", "invokeObservers"
   ];
+
+  function indexNode(node) {
+    for (let indexer of m._indexers.values()) {
+      indexer(node);
+    }
+  }
+
   /**
    * Add an operator
    * @param  {string} name   - the name of the operator
@@ -41,9 +49,7 @@ function newInstance(meta = {}) {
       let node = operator(...args);
       node.meta = {};
       shadowCopy(this.meta, node.meta);
-      let key = [(m._meta.namespace && m._meta.namespace !== '') ? m._meta.namespace : '__ANON_NS__',
-        node.name ? node.name : node.id].join('.');
-      m._nodes.set(key, node);
+      indexNode(node);
       return this.to(node);
     };
 
@@ -52,9 +58,7 @@ function newInstance(meta = {}) {
       let node = operator(...args);
       node.meta = {};
       shadowCopy(m._meta, node.meta);
-      let key = [(m._meta.namespace && m._meta.namespace !== '') ? m._meta.namespace : '__ANON_NS__',
-        node.name ? node.name : node.id].join('.');
-      m._nodes.set(key, node);
+      indexNode(node);
       return node;
     };
 
@@ -89,10 +93,7 @@ function newInstance(meta = {}) {
       let node = source(...args);
       node.meta = {};
       shadowCopy(m._meta, node.meta);
-      
-      let key = [(m._meta.namespace && m._meta.namespace !== '') ? m._meta.namespace : '__ANON_NS__',
-        node.name ? node.name : node.id].join('.');
-      m._nodes.set(key, node);
+      indexNode(node);
       return node;
     };
     return m;
@@ -111,6 +112,34 @@ function newInstance(meta = {}) {
     return m;
   }
   m.addSources = addSources;
+
+  /**
+   * add querier 
+   * @param {string} name - the querier name
+   * @param {object} querier - the querier object with query method
+   * @return {bouton} the bouton module
+   */
+  function addQuerier(name, querier) {
+    m[name] = function(...args) {
+      return querier.query(m, ...args);
+    }
+    return m;
+  }
+  m.addQuerier = addQuerier;
+
+  /**
+   * add indexer 
+   * @param {string} name - the indexer name
+   * @param {object} indexer - the indexer object with index method
+   * @return {bouton} the bouton module
+   */
+  function addIndexer(name, indexer) {
+    m._indexers.set(name, function(node) {
+      indexer.index(m, node);
+    })
+    return m;
+  }
+  m.addIndexer = addIndexer;
 
   /**
    * load default sources and operators
@@ -145,6 +174,18 @@ function newInstance(meta = {}) {
     if (extension.observers) {
       for (let name in extension.observers) {
         m.observers[name] = extension.observers[name];
+      }
+    }
+
+    if (extension.indexers) {
+      for (let name in extension.indexers) {
+        m.addIndexer(name, extension.indexers[name]);
+      }
+    }
+
+    if (extension.queriers) {
+      for (let name in extension.queriers) {
+        m.addQuerier(name, extension.queriers[name]);
       }
     }
 
