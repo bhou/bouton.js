@@ -1,6 +1,6 @@
 //@flow
 const EventEmitter = require("eventemitter3");
-const uuid = require("node-uuid");
+const uuid = require("uuid");
 
 type NodeRef = { [key: string]: Node };
 

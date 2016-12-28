@@ -1,11 +1,11 @@
 {
   "name": "bouton",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "A framework to build your reactive library",
   "main": "lib/index.js",
   "dependencies": {
     "eventemitter3": "^1.2.0",
-    "node-uuid": "^1.4.7"
+    "uuid": "^3.0.1"
   },
   "devDependencies": {
     "babel-cli": "^6.6.5",
@@ -22,8 +22,8 @@
   },
   "scripts": {
     "test": "node_modules/nodeunit/bin/nodeunit test",
-    "flow" : "node_modules/babel-cli/bin/babel.js ./src --out-dir ./flow-output",
-    "flow-watch" : "node_modules/babel-cli/bin/babel.js -w ./src --out-dir ./flow-output",
+    "flow": "node_modules/babel-cli/bin/babel.js ./src --out-dir ./flow-output",
+    "flow-watch": "node_modules/babel-cli/bin/babel.js -w ./src --out-dir ./flow-output",
     "build": "node_modules/babel-cli/bin/babel.js ./flow-output --out-dir ./lib --presets es2015",
     "build-watch": "node_modules/babel-cli/bin/babel.js -w ./flow-output --out-dir ./lib --presets es2015",
     "webpack": "node_modules/webpack/bin/webpack.js",
