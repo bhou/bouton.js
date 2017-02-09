@@ -24,4 +24,5 @@ ratings:
 exclude_paths:
 - test/
 - "build/bouton.js"
+- "test/test.js"
 
