@@ -1,6 +1,6 @@
 # bouton.js
 
-![build status](https://travis-ci.org/bhou/bouton.js.svg?branch=master)
+![build status](https://travis-ci.org/bhou/bouton.js.svg?branch=master)  [![Code Climate](https://codeclimate.com/github/bhou/bouton.js/badges/gpa.svg)](https://codeclimate.com/github/bhou/bouton.js)
 
 A framework to build your reactive library. It provides a basic feature set for your reactive library:
 
