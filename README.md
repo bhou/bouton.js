@@ -26,7 +26,7 @@ By chaining Node together you can build your stream like what RxJS, bacon.js and
 
 **bouton.js** ships with a small set of operators and signal generator, and provides a very simple API for you to extend you own operator and signal source.
 
-To understand how **bouton.js** works, see the tutorial: [Implement a JavaScript reactive programming library](http://blog.bohou.fr/2016/07/03/a-reactive-programming-library-implementation-part-1/)
+To understand how **bouton.js** works, see the tutorial: [Implement a JavaScript reactive programming library](https://medium.com/@bohou/implement-a-javascript-reactive-programming-library-part-1-f564ac6ad789)
 
 I haven't provided many operators in this library yet (In progress). The idea of this library is to let you customize the library on your own way. You can build your own reactive programming library with your own set of operators.
 
