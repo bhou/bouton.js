@@ -1,5 +1,8 @@
 var path = require('path');
+const TerserPlugin = require("terser-webpack-plugin")
+const PROD = (process.env.NODE_ENV === "production");
 module.exports = {
+    mode: PROD ? 'production' : 'development',
     entry: {
       bouton: './lib/web-entry.js'
     },
@@ -8,15 +11,21 @@ module.exports = {
         filename: '[name].js'
     },
     module: {
-      loaders: [
+      rules: [
         {
           test: /\.js$/,
           exclude: /(node_modules|bower_components)/,
-          loader: 'babel', // 'babel-loader' is also a legal name to reference
-          query: {
-            presets: ['es2015']
-          }
+          use: [
+            {
+              loader: 'babel-loader',
+              options: { presets: ['@babel/preset-env'] }
+            }
+          ]
         }
       ]
-    }
+    },
+    optimization: {
+      minimize: PROD,
+      minimizer: [new TerserPlugin()],
+    },
 };
