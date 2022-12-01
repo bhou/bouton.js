@@ -26,6 +26,8 @@ module.exports = {
     },
     optimization: {
       minimize: PROD,
-      minimizer: [new TerserPlugin()],
+      minimizer: [
+        new TerserPlugin()
+      ],
     },
 };
