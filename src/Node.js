@@ -5,6 +5,8 @@ const uuid = require("uuid");
 type NodeRef = { [key: string]: Node };
 
 class Node {
+  static globalObservers : [(node : Node, when : string, ... data : any) => void];
+
   id : string;
   options: any;
   ee: EventEmitter;
@@ -12,6 +14,7 @@ class Node {
   upstreams : NodeRef;
   downstreams : NodeRef;
   meta : any;
+
   constructor(options : any, eventemitter : ?EventEmitter) {
     this.id = uuid.v1();
     this.options = options;
@@ -156,11 +159,10 @@ class Node {
     data.unshift(this);
     try {
       // run globally registered observers, first
-      let globalObservers = require("./index").observers;
-      for (let name in globalObservers) {
-        globalObservers[name].apply(this, data);
+      for (let name in Node.globalObservers) {
+        Node.globalObservers[name].apply(this, data);
       };
-      
+
       this.observers.forEach(fn => {
         fn.apply(this, data);
       });

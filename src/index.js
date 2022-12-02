@@ -8,7 +8,6 @@ function shadowCopy(src, target) {
   }
 }
 
-
 function newInstance(meta = {}) {
   let m = {};
 
@@ -114,7 +113,7 @@ function newInstance(meta = {}) {
   m.addSources = addSources;
 
   /**
-   * add querier 
+   * add querier
    * @param {string} name - the querier name
    * @param {object} querier - the querier object with query method
    * @return {bouton} the bouton module
@@ -128,7 +127,7 @@ function newInstance(meta = {}) {
   m.addQuerier = addQuerier;
 
   /**
-   * add indexer 
+   * add indexer
    * @param {string} name - the indexer name
    * @param {object} indexer - the indexer object with index method
    * @return {bouton} the bouton module
@@ -157,6 +156,7 @@ function newInstance(meta = {}) {
 
 
   m.observers = {};
+  m.Node.globalObservers = m.observers
 
   function extend(extension) {
     if (typeof extension === "string") {
